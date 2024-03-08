@@ -1,0 +1,530 @@
+alert_info:
+  alias: alert-info
+  sequence:
+  - repeat:
+      count: '15'
+      sequence:
+      - service: light.turn_on
+        data:
+          color_name: aliceblue
+          brightness: 60
+          effect: colorloop
+        target:
+          entity_id: light.alert_lights
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
+      - service: light.turn_off
+        data: {}
+        target:
+          entity_id: light.alert_lights
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
+  mode: restart
+  icon: mdi:lightbulb-alert
+alert_warning:
+  alias: alert-warning
+  sequence:
+  - repeat:
+      count: '15'
+      sequence:
+      - service: light.turn_on
+        data:
+          color_name: brown
+          brightness: 80
+          effect: colorloop
+        target:
+          entity_id: light.alert_lights
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
+      - service: light.turn_off
+        data: {}
+        target:
+          entity_id: light.alert_lights
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
+  mode: restart
+  icon: mdi:lightbulb-alert
+alert_severe:
+  alias: alert-severe
+  sequence:
+  - repeat:
+      count: '240'
+      sequence:
+      - service: light.turn_on
+        data:
+          color_name: red
+          brightness: 100
+          effect: colorloop
+        target:
+          entity_id: light.alert_lights
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 0
+          milliseconds: 500
+      - service: light.turn_off
+        data: {}
+        target:
+          entity_id: light.alert_lights
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 0
+          milliseconds: 500
+  mode: restart
+  icon: mdi:lightbulb-alert
+alert_alarm:
+  alias: 'alarm: lights'
+  sequence:
+  - repeat:
+      while:
+      - condition: template
+        value_template: '{{ states(''input_boolean.alert_alarm_enabled'') == ''on''
+          }}'
+      sequence:
+      - service: light.turn_on
+        data:
+          color_name: red
+          brightness: 100
+          effect: colorloop
+        target:
+          entity_id: light.security_lights
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 0
+          milliseconds: 500
+      - service: light.turn_off
+        data: {}
+        target:
+          entity_id: light.security_lights
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 0
+          milliseconds: 500
+  mode: restart
+  icon: mdi:lightbulb-alert
+alarm_reset_helpers:
+  alias: 'security: reset-helpers'
+  sequence:
+  - parallel:
+    - service: input_boolean.turn_off
+      data: {}
+      target:
+        entity_id: input_boolean.alert_alarm_enabled
+    - service: timer.finish
+      data: {}
+      target:
+        entity_id: timer.alert_alarm_timer
+    - service: input_number.set_value
+      data:
+        value: 0
+      target:
+        entity_id: sensor.alarm_new_door_opened
+    - service: input_number.set_value
+      data:
+        value: '{{ states(''sensor.count_open_doors'') }}
+
+          '
+      target:
+        entity_id: input_number.security_outside_open_doors_count
+    - service: input_text.set_value
+      metadata: {}
+      data:
+        value: '{{ states(''sensor.info_open_doors'') }}'
+      target:
+        entity_id: input_text.security_outside_open_doors_info_snapshot
+    - service: input_number.set_value
+      data:
+        value: 0
+      target:
+        entity_id: sensor.security_count_new_inside_door_opened
+    - service: input_number.set_value
+      data:
+        value: '{{ states(''sensor.security_count_inside_open_contacts'') }}
+
+          '
+      target:
+        entity_id: input_number.security_inside_open_doors_count
+    - service: input_text.set_value
+      metadata: {}
+      data:
+        value: '{{ states(''sensor.security_info_inside_open_doors'') }}'
+      target:
+        entity_id: input_text.security_inside_open_doors_info_snapshot
+    - service: input_number.set_value
+      data:
+        value: 0
+      target:
+        entity_id: sensor.security_roller_shade_open_count_diff
+    - service: input_number.set_value
+      data:
+        value: '{{ states(''sensor.security_roller_shade_open_count'') }}
+
+          '
+      target:
+        entity_id: input_number.security_roller_shade_open_count
+    - service: input_text.set_value
+      metadata: {}
+      data:
+        value: '{{ states(''sensor.security_roller_shade_open_info'') }}'
+      target:
+        entity_id: input_text.security_roller_shade_open_info_snapshot
+  mode: restart
+  icon: mdi:restart
+alarm_media:
+  alias: 'alarm: media'
+  variables:
+    media_content_id: media-source://media_source/local/police-siren-sound.mp3
+    media_content_type: audio/mpeg
+  sequence:
+  - service: media_player.volume_set
+    data:
+      volume_level: 1
+    target:
+      entity_id: media_player.alarm_media
+  - service: media_player.play_media
+    target:
+      entity_id: media_player.alarm_media
+    data:
+      media_content_id: '{{ media_content_id }}'
+      media_content_type: '{{ media_content_type }}'
+  mode: restart
+  icon: mdi:bullhorn
+alarm_media_tts:
+  alias: 'alarm: media-tts'
+  sequence:
+  - service: media_player.volume_set
+    data:
+      volume_level: 1
+    target:
+      entity_id: media_player.alarm_media
+  - service: tts.cloud_say
+    data:
+      cache: false
+      entity_id: media_player.alarm_media
+      message: '{{ message }}'
+    enabled: true
+  mode: restart
+  icon: mdi:bullhorn
+alert_template_media:
+  alias: 'alert-template: media'
+  sequence:
+  - service: media_player.volume_set
+    data:
+      volume_level: '{{ volume_level | float }}'
+    target:
+      entity_id: media_player.alert_media
+  - service: media_player.play_media
+    data:
+      media_content_id: '{{ media_content_id }}'
+      media_content_type: '{{ media_content_type }}'
+    target:
+      entity_id: media_player.alert_media
+  variables:
+    media_content_id: media-source://media_source/local/Franz Schubert The Trout.mp3
+    media_content_type: audio/mpeg
+    volume_level: 0.7
+  mode: restart
+  icon: mdi:bullhorn
+alert_info_media:
+  alias: 'alert-info: media'
+  sequence:
+  - service: script.alert_template_media
+    data:
+      media_content_id: '{{ media_content_id }}'
+      media_content_type: '{{ media_content_type }}'
+      volume_level: '{{ volume_level | float }}'
+  variables:
+    media_content_id: media-source://media_source/local/Franz Schubert The Trout.mp3
+    media_content_type: audio/mpeg
+    volume_level: 0.5
+  mode: restart
+  icon: mdi:bullhorn
+light_on_template:
+  alias: 'light: turn_on template'
+  sequence:
+  - service: light.turn_on
+    data:
+      color_name: '{{ color_name }}'
+    target:
+      entity_id: '{{ entity_id }}'
+  - service: light.turn_on
+    data:
+      brightness_pct: '{{ brightness_pct | int }}'
+      color_temp_kelvin: '{{ color_temp_kelvin | int }}'
+    target:
+      entity_id: '{{ entity_id }}'
+  variables:
+    color_name: white
+    brightness_pct: 90
+    color_temp_kelvin: 7000
+  mode: restart
+  icon: mdi:lightbulb-on
+1dm_night_lights:
+  alias: 1.DM night-lights
+  sequence:
+  - service: light.turn_on
+    data:
+      color_name: orange
+      brightness_pct: 30
+    target:
+      area_id: dormitor_matrimonial
+      entity_id: light.1_dm_led_strip
+  mode: single
+  icon: mdi:lightbulb-night
+0ts_roll_down:
+  alias: 0.TS roll-down
+  sequence:
+  - service: remote.send_command
+    data:
+      num_repeats: 1
+      delay_secs: 0.4
+      hold_secs: 0
+      device: 0ts_roll
+      command: 0ts_roll-down
+    target:
+      entity_id:
+      - remote.0_lv2_broadlink_rm4
+  mode: single
+  icon: mdi:roller-shade-closed
+'1694085505020':
+  alias: 0.TS roll-down (Duplicate)
+  sequence:
+  - service: remote.send_command
+    data:
+      num_repeats: 1
+      delay_secs: 0.4
+      hold_secs: 0
+      device: 0ts_roll
+      command: 0ts_roll-up
+    target:
+      entity_id:
+      - remote.0_lv2_broadlink_rm4
+  mode: single
+  icon: mdi:roller-shade-closed
+0ts_roll_stop:
+  alias: 0.TS roll-stop
+  sequence:
+  - service: remote.send_command
+    data:
+      num_repeats: 1
+      delay_secs: 0.4
+      hold_secs: 0
+      device: 0ts_roll
+      command: 0ts_roll-stop
+    target:
+      entity_id:
+      - remote.0_lv2_broadlink_rm4
+  mode: single
+  icon: mdi:roller-shade-closed
+0lv2_ac_on:
+  alias: 0.LV2 AC Toggle On/Off
+  sequence:
+  - service: remote.send_command
+    data:
+      num_repeats: 1
+      delay_secs: 0.4
+      hold_secs: 0
+      device: 0lv2_air_conditioning
+      command: 0lv2_ac_toggle_on_off
+    target:
+      entity_id:
+      - remote.0_lv2_broadlink_rm4
+  mode: single
+  icon: mdi:air-conditioner
+1dm_roll_down:
+  alias: 1.DM roll-down
+  sequence:
+  - service: remote.send_command
+    data:
+      num_repeats: 2
+      delay_secs: 1
+      hold_secs: 0
+      device: 1dm_roll
+      command: 1dm_roll-down
+    target:
+      entity_id: remote.1_dm_broadlink_rm4
+  mode: single
+  icon: mdi:roller-shade-closed
+1dm_roll_up:
+  alias: 1.DM roll-up
+  sequence:
+  - service: remote.send_command
+    data:
+      num_repeats: 1
+      delay_secs: 0.4
+      hold_secs: 0
+      device: 1dm_roll
+      command: 1dm_roll-up
+    target:
+      entity_id:
+      - remote.1_dm_broadlink_rm4
+  mode: single
+  icon: mdi:roller-shade
+1dm_roll_stop:
+  alias: 1.DM roll-stop
+  sequence:
+  - service: remote.send_command
+    data:
+      num_repeats: 1
+      delay_secs: 0.4
+      hold_secs: 0
+      device: 1dm_roll
+      command: 1dm_roll-stop
+    target:
+      entity_id:
+      - remote.1_dm_broadlink_rm4
+  mode: single
+  icon: mdi:roller-shade
+1dm_air_conditioning_lights_toggle:
+  alias: 1.DM Air Conditioning lights-toggle
+  sequence:
+  - service: remote.send_command
+    data:
+      num_repeats: 1
+      delay_secs: 0.4
+      hold_secs: 0
+      device: 1dm_air_conditioning
+      command: 1dm_air_conditioning-lights-toggle
+  mode: single
+  icon: mdi:television-ambient-light
+notification:
+  alias: notification
+  variables:
+    critical: false
+    info: false
+    title: ''
+  sequence:
+  - if:
+    - condition: template
+      value_template: '{{ critical==true }}'
+      alias: critical notification
+    then:
+    - service: script.notification_critical
+      metadata: {}
+      data:
+        message: '{{ message }}'
+        title: '{{ title }}'
+    else:
+    - alias: info notification
+      if:
+      - condition: template
+        value_template: '{{ info==true }}'
+      then:
+      - service: notify.mobile_phones
+        metadata: {}
+        data:
+          message: '{{ message }}'
+          title: '{{ title }}'
+  - service: persistent_notification.create
+    metadata: {}
+    data:
+      title: '{{ title }}'
+      message: '{{now().strftime(''%Y-%m-%d %H:%M:%S%n'')}}{{ message }}'
+  mode: restart
+  icon: mdi:message-badge
+notification_critical:
+  alias: 'notification: critical'
+  sequence:
+  - service: notify.mobile_phones
+    metadata: {}
+    data:
+      message: '{{ message }}'
+      title: '{{ title }}'
+      data:
+        push:
+          sound:
+            name: default
+            critical: 1
+            volume: 1
+  icon: mdi:message-badge
+  mode: single
+light_turn_on_night_template:
+  alias: 'light: turn_on night-template'
+  variables:
+    color_name: orange
+    brightness_pct: 30
+    color_temp_kelvin: 2000
+  sequence:
+  - service: script.light_on_template
+    data:
+      brightness_pct: '{{ brightness_pct | int }}'
+      color_name: '{{ color_name }}'
+      color_temp_kelvin: '{{ color_temp_kelvin | int }}'
+    target:
+      entity_id: '{{ entity_id }}'
+  mode: restart
+  icon: mdi:lightbulb-on
+lights_all_on:
+  alias: 'lights: all on'
+  sequence:
+  - service: homeassistant.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - group.lights_first_floor
+      - group.lights_ground_floor
+  mode: single
+lights_all_off:
+  alias: 'lights: all off'
+  sequence:
+  - service: homeassistant.turn_off
+    target:
+      entity_id:
+      - group.lights_first_floor
+      - group.lights_ground_floor
+    data: {}
+  mode: single
+light_color_cyan:
+  alias: 'light-color: cyan-template'
+  sequence:
+  - service: light.turn_on
+    metadata: {}
+    data:
+      rgb_color:
+      - 0
+      - 238
+      - 255
+    target:
+      entity_id: '{{ entity_id }}'
+  variables:
+    entity_id: light.0_bc_lightbar
+  mode: single
+  icon: mdi:lightbulb-on
+0_bc_lightbar:
+  alias: 0.BC lightbar
+  sequence:
+  - service: script.light_color_cyan
+    data:
+      entity_id: light.0_bc_lightbar
+  mode: single
+  icon: mdi:lightbulb-on
+0_gr_solar_light_nord_action:
+  alias: 0.GR solar-light-nord action
+  sequence:
+  - service: remote.send_command
+    metadata: {}
+    data:
+      num_repeats: 1
+      delay_secs: 0.4
+      hold_secs: 0
+      device: 0_gr_solar_light_nord
+      command: turn_on
+    target:
+      entity_id: remote.0_lv2_broadlink_rm4
+  mode: single

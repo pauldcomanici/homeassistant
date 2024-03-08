@@ -1,0 +1,52 @@
+- platform: group
+  name: "contact-sensors: indoor"
+  device_class: opening
+  entities:
+    - binary_sensor.0_bj_door_contact
+    - binary_sensor.0_ct_door_contact
+    - binary_sensor.0_bp_door_contact
+    - binary_sensor.0_br_door_contact
+    - binary_sensor.1_de_door_contact
+    - binary_sensor.1_di_door_contact
+    - binary_sensor.1_dr_door_contact
+    - binary_sensor.1_bs_door_contact
+    - binary_sensor.1_dm_door_contact
+    - binary_sensor.1_drm_door_contact
+- platform: group
+  name: "contact-sensors: outdoor"
+  device_class: opening
+  entities:
+    - binary_sensor.0_ct_window_contact
+    - binary_sensor.0_bj_window_contact
+    - binary_sensor.0_bp_window_contact
+    - binary_sensor.1_di_window_contact
+    - binary_sensor.1_de_window_contact
+    - binary_sensor.1_bs_window_contact
+    - binary_sensor.1_dm_door_outside_contact
+    - binary_sensor.1_drm_window_contact
+- platform: group
+  name: "contact-sensors: roller-shade"
+  device_class: opening
+  entities:
+    - binary_sensor.0_ts_roll_left_down_contact
+    - binary_sensor.0_ts_roll_right_down_contact
+    - binary_sensor.1_dm_roll_down_contact
+- platform: group
+  name: "smoke: sensors"
+  entities:
+    - binary_sensor.0_bc_smoke_alarm
+    - binary_sensor.0_ct_smoke_smoke
+    - binary_sensor.1_dm_smoke_smoke
+    - binary_sensor.2_pd_smoke_alarm
+- platform: tod
+  name: "dehumidifier: schedule"
+  after: "7:30"
+  before: "22:30"
+  unique_id: dehumidifier_schedule
+- platform: group
+  name: "1.DM bed-occupied"
+  device_class: occupancy
+  entities:
+    - binary_sensor.1_dm_bed_occupancy_paul
+    - binary_sensor.1_dm_bed_occupancy_silvana
+  all: true

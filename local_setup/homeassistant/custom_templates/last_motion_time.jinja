@@ -1,0 +1,54 @@
+{% macro last_motion(entity_id, last_motion_entity_id, detection_interval_entity='none') %}
+{% set entity_state = states(entity_id) %}
+{% set last_changed = as_timestamp(states[entity_id].last_changed) %}
+{% if entity_state=='on' %}
+  {% set now_ts = as_timestamp(now()) %}
+  {% if last_changed<=now_ts %}
+    {{ now_ts }}
+  {% else %}
+    {{ last_changed }}
+  {% endif %}
+{% elif entity_state=='off' %}
+  {% set detection_interval = 10 %}
+  {% if detection_interval_entity!='none' %}
+    {% set detection_interval = states(detection_interval_entity)|int %}
+  {% endif %}
+  {{ last_changed-detection_interval }}
+{% else %}
+  {% set lastMotion = states(last_motion_entity_id) %}
+  {% if lastMotion == 'unknown' or lastMotion =='unavailable' %}
+    0
+  {% else %}
+    {{ lastMotion }}
+  {% endif %}
+{% endif %}
+{% endmacro %}
+
+{% macro last_motion_time(entity_id) %}
+{% filter trim %}
+{% if is_state(entity_id, 'on') %}
+  now
+{% else %}
+  {% set lastChanged = states[entity_id].last_changed %}
+  {% set diff = (now() - lastChanged)|string %}
+  {% set days = diff.split(',')[0] %}
+  {% if days | regex_match('[0-9]+ days') %}
+    {% set daysValue = days.split(' ')[0] %}
+    {{ daysValue }}d
+  {% else %}
+    {% set time = diff.split('.')[0] %}
+    {% set timeParts = time.split(':') %}
+    {% set hour = timeParts[0]|int%}
+    {% set min = timeParts[1]|int%}
+    {% set sec = timeParts[2]|int%}
+    {% if hour > 0 %}
+      {{hour}}h
+    {% elif min > 0 %}
+      {{min}}m
+    {% elif sec >= 0 %}
+      {{sec}}s
+    {% endif %}
+  {% endif %}
+{% endif %}
+{% endfilter %}
+{% endmacro %}

@@ -1,0 +1,58 @@
+{% macro contact_sensor_changes(isOutside, checkOpened) %}
+{% set result = namespace({'error': false, 'opened': '', 'closed': '', 'message': ''}) %}
+
+{% set openContactsAtArm=[] %}
+{% set openContactsAtArmStr='' %}
+{% set openContactsNow=[] %}
+{% set openContactsNowStr='' %}
+
+{% if isOutside == true %}
+  {% set openContactsAtArmStr = states('input_text.security_outside_open_doors_info_snapshot') %}
+  {% set openContactsNowStr = states('sensor.info_open_doors') %}
+{% else %}
+  {% set openContactsAtArmStr = states('input_text.security_inside_open_doors_info_snapshot') %}
+  {% set openContactsNowStr = states('sensor.security_info_inside_open_doors') %}
+{% endif %}
+
+{#
+{% set openContactsAtArmStr = '0.BR door, 0.BJ door, 1.DRM door' %}
+{% set openContactsNowStr = '0.BR door, 1.DM door, 1.DRM door' %}
+#}
+
+{% if checkOpened==true %}
+  {# check open #}
+  {% if openContactsNowStr == 'unavailable' %}
+    {% set result.error = true %}
+    {% set result.message = 'The current list of open contacts is empty' %}
+  {% else %}
+    {% set openContactsNow = openContactsNowStr.split(',') %}
+    {% for item in openContactsNow %}
+      {% set item = item|trim %}
+      
+      {% if item not in openContactsAtArmStr %}
+        {% set result.opened = item %}
+      {% endif %}
+    {% endfor %} 
+  {% endif %}
+{% else %}
+  {# check closed #}
+  {% if openContactsAtArmStr == 'unavailable' %}
+    {% set result.error = true %}
+    {% set result.message = 'The snapshot list of open contacts is empty' %}
+  {% else %}
+    {% set openContactsAtArm = openContactsAtArmStr.split(',') %}
+    {% for item in openContactsAtArm %}
+      {% set item = item|trim %}
+
+      {% if item not in openContactsNowStr %}
+        {% set result.closed = item %}
+      {% endif %}
+    {% endfor %} 
+  {% endif %}
+{% endif %}
+
+{#
+{{ result }}
+#}
+{{ result.error }};{{ result.message }};{{ result.opened }};{{ result.closed }}
+{% endmacro %}

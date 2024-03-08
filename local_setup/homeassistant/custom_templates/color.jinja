@@ -1,0 +1,159 @@
+{% macro battery_percent(entity_id) %}
+{% set value = states(entity_id)|int %}
+{% if value<90 %}
+  lime
+{% elif value<50 %}
+  yellow
+{% elif value<20 %}
+  orange
+{% elif value<10 %}
+  red
+{% else %}
+  green
+{% endif %}
+{% endmacro %}
+
+{% macro battery_low(entity_id) %}
+{% set value = states(entity_id) %}
+{% if value=='on' %}
+  red
+{% elif value=='off' %}
+  green
+{% else %}
+  grey
+{% endif %}
+{% endmacro %}
+
+{% macro door_state_inside(entity_id) %}
+{% if states(entity_id)=="on" %}
+  orange
+{% elif states(entity_id)=="off" %}
+  blue
+{% else %}
+  grey
+{% endif %}
+{% endmacro %}
+
+{% macro door_state_outside(entity_id) %}
+{% if states(entity_id)=="on" %}
+  red
+{% elif states(entity_id)=="off" %}
+  green
+{% else %}
+  grey
+{% endif %}
+{% endmacro %}
+
+{% macro door_count_inside(entity_id) %}
+{% if states(entity_id)|int>0 %}
+  orange
+{% else %}
+  blue
+{% endif %}
+{% endmacro %}
+
+{% macro door_count_outside(entity_id) %}
+{% if states(entity_id)|int>0 %}
+  red
+{% else %}
+  green
+{% endif %}
+{% endmacro %}
+
+{% macro plug_state(entity_id) %}
+{% if states(entity_id)=="on" %}
+  orange
+{% endif %}
+{% endmacro %}
+
+{% macro lux_value(entity_id) %}
+{% if states(entity_id)>100 %}
+  orange
+{% endif %}
+{% endmacro %}
+
+{% macro motion_state(entity_id) %}
+{% if states(entity_id)=="on" %}
+  orange
+{% endif %}
+{% endmacro %}
+
+{% macro light_state(entity_id) %}
+{% if states(entity_id)=="on" %}
+  yellow
+{% else %}
+  grey
+{% endif %}
+{% endmacro %}
+
+{% macro voc_state(entity_id) %}
+{% set value = states(entity_id)|int %}
+{% if value<250 %}
+  green
+{% elif value < 2000 %}
+  lime
+{% else %}
+  red
+{% endif %}
+{% endmacro %}
+
+{% macro caqi_state(entity_id) %}
+{% set value = states(entity_id)|int %}
+{% if value<25 %}
+  green
+{% elif value < 50 %}
+  lime
+{% elif value < 75 %}
+  yellow
+{% elif value < 100 %}
+  orange
+{% else %}
+  red
+{% endif %}
+{% endmacro %}
+
+{% macro smoke_state(entity_id) %}
+{% if states(entity_id)=="on" %}
+  brown
+{% endif %}
+{% endmacro %}
+
+{% macro water_leak_state(entity_id) %}
+{% if states(entity_id)=="on" %}
+  blue
+{% endif %}
+{% endmacro %}
+
+{% macro gas_state(entity_id) %}
+{% if states(entity_id)=="on" %}
+  #F0E68C
+{% endif %}
+{% endmacro %}
+
+{% macro humidity_state(entity_id) %}
+{% if states(entity_id)>=states('input_number.humidity_bathroom_threshold') %}
+  blue
+{% endif %}
+{% endmacro %}
+
+{% macro light_switch_state(entity_id) %}
+{% if states(entity_id)=="on" %}
+  #FFC107
+{% endif %}
+{% endmacro %}
+
+{% macro roller_shade_state(entity_id) %}
+{% if states(entity_id)=="on" %}
+  white
+{% else %}
+  grey
+{% endif %}
+{% endmacro %}
+
+{% macro roller_shade_count(entity_id) %}
+{% if states(entity_id)|int>0 %}
+  white
+{% else %}
+  grey
+{% endif %}
+{% endmacro %}

@@ -1,0 +1,12 @@
+security_inside_open_doors_info_snapshot:
+  name: "security: inside open doors info snapshot"
+  initial: ''
+  max: 255
+security_outside_open_doors_info_snapshot:
+  name: "security: outside open doors info snapshot"
+  initial: ''
+  max: 255
+security_roller_shade_open_info_snapshot:
+  name: "security: roller-shade open info snapshot"
+  initial: ''
+  max: 255

@@ -1,0 +1,3166 @@
+- id: '1692963973257'
+  alias: 0.CT Washer-finish
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - switch.0_ct_washer
+    from: 'on'
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: input_boolean.manual_override_enabled
+    state: 'off'
+  action:
+  - service: script.notification
+    data:
+      info: true
+      message: Washer cycle complete!
+  mode: single
+- id: '1693145079524'
+  alias: 'security: alarm-flow'
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - alarm_control_panel.home_alarm
+    to: armed_away
+    id: alarm-arm-away
+  - platform: state
+    entity_id:
+    - alarm_control_panel.home_alarm
+    to: armed_home
+    id: alarm-arm-home
+  - platform: state
+    entity_id:
+    - alarm_control_panel.home_alarm
+    to: armed_night
+    id: alarm-arm-night
+  - platform: state
+    entity_id:
+    - alarm_control_panel.home_alarm
+    to: triggered
+    id: alarm-triggered
+  condition:
+  - condition: state
+    entity_id: input_boolean.manual_override_enabled
+    state: 'off'
+  action:
+  - if:
+    - condition: trigger
+      id:
+      - alarm-arm-away
+      - alarm-arm-home
+      - alarm-arm-night
+    then:
+    - parallel:
+      - service: script.alarm_reset_helpers
+        data: {}
+  - if:
+    - condition: trigger
+      id:
+      - alarm-arm-away
+      - alarm-arm-home
+    then:
+    - parallel:
+      - service: media_player.media_stop
+        target:
+          entity_id: media_player.media_player_all
+        data: {}
+      - service: scene.turn_on
+        target:
+          entity_id: scene.lights_all_off
+        data: {}
+  - alias: alarm-flow
+    choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - alarm-arm-home
+      sequence:
+      - parallel:
+        - service: alarm_control_panel.alarm_arm_home
+          data: {}
+          target:
+            device_id: b39cfa99cca9114d0e93e078d7641d80
+        - service: alarm_control_panel.alarm_arm_home
+          data: {}
+          target:
+            device_id: 33f9b607ba3d0ad9fdbf0be4a8db8513
+        - service: script.notification
+          data:
+            info: true
+            message: armed stay
+            title: 'security-system: armed'
+        - service: scene.turn_on
+          data: {}
+          target:
+            entity_id: scene.st_security_armed_stay
+        - service: switch.turn_on
+          data: {}
+          target:
+            entity_id: switch.1_dm_aeotec_cam_360
+    - conditions:
+      - condition: trigger
+        id:
+        - alarm-arm-away
+      sequence:
+      - parallel:
+        - service: script.notification
+          data:
+            info: true
+            message: armed away
+            title: 'security-system: armed'
+        - service: alarm_control_panel.alarm_arm_away
+          data: {}
+          target:
+            device_id: b39cfa99cca9114d0e93e078d7641d80
+        - service: alarm_control_panel.alarm_arm_away
+          data: {}
+          target:
+            device_id: 33f9b607ba3d0ad9fdbf0be4a8db8513
+        - service: scene.turn_on
+          data: {}
+          target:
+            entity_id: scene.st_security_armed_away
+        - service: input_boolean.turn_on
+          data: {}
+          target:
+            entity_id: input_boolean.away_random_lighting_enabled
+        - service: input_boolean.turn_off
+          target:
+            entity_id: input_boolean.home_dog_presence
+          data: {}
+    - conditions:
+      - condition: trigger
+        id:
+        - alarm-arm-night
+      sequence:
+      - parallel:
+        - service: alarm_control_panel.alarm_arm_night
+          data: {}
+          target:
+            entity_id: alarm_control_panel.0bc_aqara_cam_g3_security_system
+          enabled: false
+        - service: alarm_control_panel.alarm_arm_night
+          data: {}
+          target:
+            device_id: 33f9b607ba3d0ad9fdbf0be4a8db8513
+        - service: script.notification
+          data:
+            info: true
+            message: 'Home security: armed night.'
+            title: 'Home security: armed night.'
+        - service: scene.turn_on
+          data: {}
+          target:
+            entity_id: scene.st_security_armed_stay
+    - conditions:
+      - condition: trigger
+        id:
+        - alarm-triggered
+      sequence:
+      - service: media_player.volume_set
+        data:
+          volume_level: 1
+        target:
+          entity_id: media_player.alarm_media
+      - service: timer.start
+        data: {}
+        target:
+          entity_id: timer.alert_alarm_timer
+      - parallel:
+        - service: script.notification
+          data:
+            critical: true
+            message: Intruder alarm! Intruder alarm! Intruder alarm!
+            title: 'security-system: alert'
+        - service: script.alert_alarm
+          data: {}
+        - service: script.alarm_media
+          data:
+            media_content_id: media-source://media_source/local/police-siren-sound.mp3
+            media_content_type: audio/mpeg
+  mode: single
+- id: '1693151339530'
+  alias: 'security: trigger-alarm-stay'
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.alarm_new_door_opened
+    to: '1'
+  condition:
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: armed_home
+      enabled: true
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: armed_night
+      enabled: true
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: armed_away
+      enabled: true
+  action:
+  - if:
+    - condition: template
+      value_template: '{# check that the opened contact is 1.BS window #} {% set result
+        = open_contact|trim %} {{ result == state_attr(''binary_sensor.1_bs_window_contact'',
+        ''friendly_name'') }}'
+    - condition: numeric_state
+      entity_id: sensor.1_bs_tvoc_humidity
+      above: input_number.humidity_bathroom_threshold
+      enabled: true
+    - condition: state
+      entity_id: binary_sensor.1_bs_window_contact
+      state: 'on'
+    then:
+    - parallel:
+      - service: script.notification
+        data:
+          info: true
+          title: 'security-system: opened contact'
+          message: '{% set result = notification_message_skip|trim %} {{ result }}'
+      - service: script.alarm_reset_helpers
+        data: {}
+    else:
+    - if:
+      - condition: template
+        value_template: '{# check that the opened contact is 0.BJ window #} {% set
+          result = open_contact|trim %} {{ result == state_attr(''binary_sensor.0_bj_window_contact'',
+          ''friendly_name'') }}'
+      - condition: numeric_state
+        entity_id: sensor.0_bj_tvoc_humidity
+        above: input_number.humidity_bathroom_threshold
+        enabled: true
+      - condition: state
+        entity_id: binary_sensor.0_bj_window_contact
+        state: 'on'
+      then:
+      - parallel:
+        - service: script.notification
+          data:
+            info: true
+            title: 'security-system: opened contact'
+            message: '{% set result = notification_message_skip|trim %} {{ result
+              }}'
+        - service: script.alarm_reset_helpers
+          data: {}
+      else:
+      - parallel:
+        - service: script.notification
+          data:
+            info: true
+            title: 'security-system: alarm trigger'
+            message: '{% set result = notification_message_triger|trim %} {{ result
+              }}'
+        - service: alarm_control_panel.alarm_trigger
+          data: {}
+          target:
+            entity_id: alarm_control_panel.home_alarm
+          enabled: true
+    enabled: true
+  variables:
+    contact_sensor_opened: '{% from ''contact_sensor_changes.jinja'' import contact_sensor_changes
+      %} {% set result = contact_sensor_changes(true, true)|trim %} {{ result }}'
+    open_contact: '{% set result = contact_sensor_opened|trim %} {% set result = result.split('';'')
+      %} {{ result[2] }}'
+    notification_message_skip: "{% set result = contact_sensor_opened|trim %} {% set
+      result = result.split(';') %} {% if result[2] %}\n  Opened contact is {{ result[2]
+      }}, skipped alarm trigger as the humidity is above the threshold.\n{% elif result[0]=='True'
+      %}\n  There was an error trying to determine opened contact -> {{ result[1]
+      }}\n{% endif %}"
+    notification_message_triger: "{% set result = contact_sensor_opened|trim %} {%
+      set result = result.split(';') %} A door/window has been opened, open contacts
+      are {{ states('sensor.info_open_doors') }}. {% if result[2] %}\n  Opened contact
+      is {{ result[2] }}.\n{% elif result[0]=='True' %}\n  There was an error trying
+      to determine opened contact -> {{ result[1] }}\n{% endif %}"
+  mode: single
+- id: '1693234655743'
+  alias: alert_warning Alarm system arm
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - zone.home
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+  condition:
+  - condition: state
+    entity_id: zone.home
+    state: '0'
+  action:
+  - if:
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: disarmed
+    then:
+    - service: script.notification
+      data:
+        info: true
+        title: 'security-system: warning'
+        message: You have not armed!
+  mode: single
+- id: '1693241205851'
+  alias: 'alert_alarm: flood'
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.0_bc_water_leak_water_leak
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 5
+    id: 0.BC
+  - platform: state
+    entity_id:
+    - binary_sensor.water_detector_moisture
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 5
+    id: 0.BP
+  - platform: state
+    entity_id:
+    - binary_sensor.1_dr_water_leak_water_leak
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 15
+    id: 1.DR
+  - platform: state
+    entity_id:
+    - binary_sensor.1_drm_water_leak_water_leak
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 15
+    id: 1.DRM
+  condition: []
+  action:
+  - parallel:
+    - alias: water-kitchen
+      choose:
+      - conditions:
+        - condition: trigger
+          id:
+          - 0.BC
+        sequence:
+        - service: script.notification
+          data:
+            critical: true
+            message: water leak determined in the kitchen!
+    - alias: water-cellar
+      choose:
+      - conditions:
+        - condition: trigger
+          id:
+          - 0.BP
+        sequence:
+        - parallel:
+          - service: switch.turn_off
+            data: {}
+            target:
+              entity_id: switch.0_bp_plug
+          - service: script.notification
+            data:
+              critical: true
+              message: water leak determined in the cellar!
+    - alias: water-dressing
+      choose:
+      - conditions:
+        - condition: trigger
+          id:
+          - 1.DR
+        sequence:
+        - parallel:
+          - service: script.notification
+            data:
+              critical: true
+              message: water leak determined in the dressing!
+    - alias: water-dressing-small
+      choose:
+      - conditions:
+        - condition: trigger
+          id:
+          - 1.DRM
+        sequence:
+        - parallel:
+          - service: script.notification
+            data:
+              critical: true
+              message: water leak determined in the matrimonial dressing!
+    - service: script.alert_warning
+      data: {}
+      enabled: true
+    - service: script.alarm_media_tts
+      data:
+        message: Attention! A water leak has been detected. Attention! A water leak
+          has been detected. Attention! A water leak has been detected.
+  mode: single
+- id: '1693245647275'
+  alias: 'alert_alarm: gas'
+  description: ''
+  trigger:
+  - type: gas
+    platform: device
+    device_id: 2c023a7e097d1fc7060ce3b0933cd4a5
+    entity_id: 2a623e732a18d6da287af41ddb5d5a0e
+    domain: binary_sensor
+    id: leak-ct
+  condition: []
+  action:
+  - parallel:
+    - alias: leak-ct
+      choose:
+      - conditions:
+        - condition: trigger
+          id:
+          - leak-ct
+        sequence:
+        - service: script.notification
+          data:
+            critical: true
+            message: gas leak determined in the technical room!
+    - service: script.alert_warning
+      data: {}
+    - service: script.alarm_media
+      data:
+        media_content_id: media-source://media_source/local/emergency-alarm.mp3
+    - service: switch.turn_off
+      data: {}
+      target:
+        entity_id: switch.0_ct_plug_heater
+  mode: single
+- id: '1693303398103'
+  alias: home.presence changes
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - zone.home
+  condition:
+  - condition: state
+    entity_id: input_boolean.manual_override_enabled
+    state: 'off'
+  action:
+  - if:
+    - condition: state
+      entity_id: input_boolean.home_guest_presence
+      state: 'off'
+    then:
+    - if:
+      - condition: state
+        entity_id: zone.home
+        state: '0'
+      then:
+      - service: input_number.set_value
+        data:
+          value: '{{ states(''input_number.1_dm_climate_away'') }}
+
+            '
+        target:
+          entity_id: input_number.1_dm_climate_temperature
+      - service: switch.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: switch.1_bs_plug
+      else:
+      - service: input_number.set_value
+        data:
+          value: '{{ states(''input_number.1_dm_climate_home'') }}'
+        target:
+          entity_id: input_number.1_dm_climate_temperature
+  mode: single
+- id: '1693328046874'
+  alias: 1.DM Climate
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.1_dm_climate_temp_diff
+  - platform: state
+    entity_id:
+    - binary_sensor.1_dm_door_outside_contact
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+  - platform: state
+    entity_id:
+    - sensor.1_dm_air_conditioning_temperature_measurement
+  - platform: state
+    entity_id:
+    - input_boolean.climate_1_dm_enabled
+  condition:
+  - condition: state
+    entity_id: binary_sensor.1_dm_door_outside_contact
+    state: 'off'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+  - condition: state
+    entity_id: input_boolean.climate_1_dm_enabled
+    state: 'on'
+  action:
+  - choose:
+    - conditions:
+      - condition: numeric_state
+        entity_id: sensor.1_dm_climate_temp_diff
+        above: 2
+      sequence:
+      - service: scene.turn_on
+        target:
+          entity_id: scene.st_ac_daily_fast
+        metadata: {}
+    - conditions:
+      - condition: numeric_state
+        entity_id: sensor.1_dm_climate_temp_diff
+        above: 1
+      sequence:
+      - service: scene.turn_on
+        target:
+          entity_id: scene.st_ac_daily
+        metadata: {}
+    - conditions:
+      - condition: numeric_state
+        entity_id: sensor.1_dm_climate_temp_diff
+        above: 0
+      sequence:
+      - if:
+        - condition: or
+          conditions:
+          - condition: state
+            entity_id: binary_sensor.time_day
+            state: 'on'
+        then:
+        - service: scene.turn_on
+          target:
+            entity_id: scene.st_ac_daily
+          metadata: {}
+        else:
+        - service: scene.turn_on
+          target:
+            entity_id: scene.st_ac_sleep
+          metadata: {}
+    - conditions:
+      - condition: numeric_state
+        entity_id: sensor.1_dm_climate_temp_diff
+        below: 0
+        above: 0
+      sequence:
+      - service: scene.turn_on
+        target:
+          entity_id: scene.st_ac_sleep
+        metadata: {}
+  mode: single
+- id: '1693332613187'
+  alias: 1.DM Climate.off
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - input_boolean.climate_1_dm_enabled
+  - platform: state
+    entity_id:
+    - binary_sensor.1_dm_door_outside_contact
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+  condition:
+  - condition: state
+    entity_id: input_boolean.manual_override_enabled
+    state: 'off'
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: binary_sensor.1_dm_door_outside_contact
+      state: 'on'
+    - condition: state
+      entity_id: input_boolean.climate_1_dm_enabled
+      state: 'off'
+  action:
+  - service: climate.turn_off
+    data: {}
+    target:
+      device_id: ce71c7622341a29c83255af38009200b
+    enabled: true
+  mode: single
+- id: '1693341135565'
+  alias: 'security: armed-actions'
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - alarm_control_panel.home_alarm
+    to: armed_away
+    id: armed-away
+  - platform: state
+    entity_id:
+    - alarm_control_panel.home_alarm
+    to: armed_home
+    id: armed-home
+  - platform: state
+    entity_id:
+    - alarm_control_panel.home_alarm
+    to: armed_night
+    id: armed-night
+  condition: []
+  action:
+  - if:
+    - condition: numeric_state
+      entity_id: sensor.count_open_doors
+      above: 0
+    then:
+    - service: script.notification
+      data:
+        info: true
+        title: 'security-system: info'
+        message: 'The following contacts are still open: {{''\n'' + states(''sensor.info_open_doors'')
+          }}'
+  - service: switch.turn_off
+    data: {}
+    target:
+      entity_id: switch.0_lv1_power_outlet
+  - if:
+    - condition: trigger
+      id:
+      - armed-night
+    then:
+    - service: switch.turn_off
+      data: {}
+      target:
+        entity_id: switch.1_dm_aeotec_cam_360
+  - if:
+    - condition: trigger
+      id:
+      - armed-home
+      - armed-night
+    then:
+    - if:
+      - condition: state
+        entity_id: binary_sensor.0_bp_door_contact
+        state: 'on'
+      then:
+      - service: script.notification
+        data:
+          info: true
+          title: 'security-system: notification'
+          message: 0.BP door is open, should be closed
+  mode: single
+- id: '1693412844780'
+  alias: alert_alarm timer
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - timer.alert_alarm_timer
+  condition: []
+  action:
+  - if:
+    - condition: state
+      entity_id: timer.alert_alarm_timer
+      state: active
+    then:
+    - service: input_boolean.turn_on
+      data: {}
+      target:
+        entity_id: input_boolean.alert_alarm_enabled
+    else:
+    - service: input_boolean.turn_off
+      data: {}
+      target:
+        entity_id: input_boolean.alert_alarm_enabled
+  mode: single
+- id: '1693414075643'
+  alias: 'security: disarm'
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - alarm_control_panel.home_alarm
+    to: disarmed
+    id: alarm-disarm
+  condition: []
+  action:
+  - parallel:
+    - service: timer.finish
+      data: {}
+      target:
+        entity_id: timer.alert_alarm_timer
+    - service: media_player.media_stop
+      data: {}
+      target:
+        entity_id: media_player.alarm_media
+    - service: input_boolean.turn_off
+      data: {}
+      target:
+        entity_id: input_boolean.away_random_lighting_enabled
+  - if:
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: triggered
+    then:
+    - service: light.turn_on
+      metadata: {}
+      data:
+        rgb_color:
+        - 255
+        - 255
+        - 255
+      target:
+        entity_id: light.light_all_lightbulbs
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 1
+        milliseconds: 0
+  - service: script.lights_all_off
+    data: {}
+  - parallel:
+    - service: alarm_control_panel.alarm_disarm
+      data: {}
+      target:
+        device_id: b39cfa99cca9114d0e93e078d7641d80
+    - service: alarm_control_panel.alarm_disarm
+      data: {}
+      target:
+        device_id: 33f9b607ba3d0ad9fdbf0be4a8db8513
+    - service: scene.turn_on
+      data: {}
+      target:
+        entity_id: scene.st_security_disarm
+    - service: script.notification
+      data:
+        info: true
+        message: 'Home security: disarmed.'
+        title: 'Home security: disarmed.'
+    - service: switch.turn_on
+      data: {}
+      target:
+        entity_id: switch.0_lv1_power_outlet
+    - if:
+      - condition: time
+        after: sensor.sun_next_setting
+        before: sensor.sun_next_rising
+      then:
+      - service: light.turn_on
+        data: {}
+        target:
+          entity_id: light.shelly_shvin_1_3494546e7416
+    - service: switch.turn_off
+      data: {}
+      target:
+        entity_id: switch.1_dm_aeotec_cam_360
+    - service: input_boolean.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: input_boolean.home_dog_presence
+  mode: single
+- id: '1693473800900'
+  alias: 'battery: phone.silvana'
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.silvanas_iphone_battery_level
+  - platform: state
+    entity_id:
+    - zone.home
+  condition:
+  - condition: template
+    value_template: '{{ is_state(''person.silvana'', ''home'') }}'
+  action:
+  - choose:
+    - conditions:
+      - type: is_battery_level
+        condition: device
+        device_id: b8feb762927cd63c995f98f733f33990
+        entity_id: fa9fa85ef46029d002d4f21fe804f2a0
+        domain: sensor
+        below: 10
+      sequence:
+      - service: notify.mobile_app_silvanas_iphone
+        data:
+          message: Charge phone, battery bellow 10%
+          title: Charge phone, battery bellow 10%
+  mode: single
+- id: '1694094108382'
+  alias: 'security: roll-actions'
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - alarm_control_panel.home_alarm
+  condition:
+  - condition: state
+    entity_id: input_boolean.roll_action_enabled
+    state: 'on'
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: triggered
+  action:
+  - if:
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: disarmed
+    then:
+    - if:
+      - condition: time
+        after: 05:30:00
+        before: '10:00:00'
+        enabled: true
+      then:
+      - parallel:
+        - service: script.1dm_roll_up
+          data: {}
+        - service: script.1694085505020
+          data: {}
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 20
+          milliseconds: 0
+      - service: script.1dm_roll_stop
+        data: {}
+      - service: python_script.set_state
+        data_template:
+          entity_id: binary_sensor.1_dm_roll_down_contact
+          state: 'on'
+        enabled: false
+    else:
+    - if:
+      - condition: or
+        conditions:
+        - condition: sun
+          after: sunset
+          after_offset: '1:00:00'
+        - condition: time
+          after: '20:00:00'
+          before: 02:00:00
+      then:
+      - service: script.0ts_roll_down
+        data: {}
+      - if:
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: alarm_control_panel.home_alarm
+            state: armed_home
+        then:
+        - service: script.1dm_roll_down
+          data: {}
+  mode: single
+- id: '1694176035291'
+  alias: 1.DM roll-actions
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.1_dm_roll_schedule
+  condition:
+  - condition: state
+    entity_id: input_boolean.roll_action_enabled
+    state: 'on'
+  action:
+  - if:
+    - condition: state
+      entity_id: binary_sensor.1_dm_roll_schedule
+      state: 'on'
+    then:
+    - service: script.1dm_roll_up
+      data: {}
+    - service: script.1dm_roll_up
+      data: {}
+    else:
+    - if:
+      - condition: state
+        state: 'off'
+        entity_id: binary_sensor.1_dm_roll_schedule
+      then:
+      - service: script.1dm_roll_down
+        data: {}
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 12
+          milliseconds: 0
+      - service: script.1dm_roll_stop
+        data: {}
+      else: []
+  mode: single
+- id: '1694179311599'
+  alias: alert_warning Alarm system disarm
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - person.silvana
+    from: not_home
+    to: home
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+  - platform: state
+    entity_id:
+    - person.paul
+    from: not_home
+    to: home
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+  condition:
+  - condition: state
+    entity_id: zone.home
+    state: '2'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+  action:
+  - if:
+    - condition: not
+      conditions:
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: disarmed
+    then:
+    - service: script.notification
+      data:
+        info: true
+        message: Disarm the security system!
+        title: 'security-system: warning'
+  mode: single
+- id: '1694348610180'
+  alias: 'security: trigger-alarm-away by motion'
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.alarm_motion
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 5
+  condition:
+  - condition: state
+    entity_id: alarm_control_panel.home_alarm
+    state: armed_away
+    enabled: true
+  action:
+  - service: script.notification
+    data:
+      info: true
+      title: 'security-system: alarm trigger away'
+      message: Motion detected
+  - service: alarm_control_panel.alarm_trigger
+    data: {}
+    target:
+      entity_id: alarm_control_panel.home_alarm
+  mode: single
+- id: '1694719832764'
+  alias: 'alert_alarm: smoke'
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.0_bc_smoke_alarm
+    to: 'on'
+    id: 0.BC
+  - platform: state
+    entity_id:
+    - binary_sensor.2_pd_smoke_alarm
+    to: 'on'
+    id: 2.PD
+  - platform: state
+    entity_id:
+    - binary_sensor.0_ct_smoke_smoke
+    to: 'on'
+    id: 0.CT
+  - platform: state
+    entity_id:
+    - binary_sensor.1_dm_smoke_smoke
+    to: 'on'
+    id: 1.DM
+  - platform: state
+    entity_id:
+    - binary_sensor.1_di_smoke_smoke
+    to: 'on'
+    id: 1.DI
+  - platform: state
+    entity_id:
+    - binary_sensor.1_de_smoke_smoke
+    to: 'on'
+    id: 1.DE
+  condition:
+  - condition: state
+    entity_id: input_boolean.smoke_alert_enabled
+    state: 'on'
+  action:
+  - parallel:
+    - service: script.alert_warning
+      data: {}
+    - service: script.alarm_media
+      data:
+        media_content_id: media-source://media_source/local/emergency-alarm.mp3
+      enabled: true
+    - choose:
+      - conditions:
+        - condition: trigger
+          id:
+          - 0.BC
+        sequence:
+        - service: script.notification
+          data:
+            critical: true
+            message: smoke alarm in the kitchen!
+            title: smoke alarm
+      - conditions:
+        - condition: trigger
+          id:
+          - 2.PD
+        sequence:
+        - service: script.notification
+          data:
+            critical: true
+            message: smoke alarm in the attic!
+            title: smoke alarm
+      - conditions:
+        - condition: trigger
+          id:
+          - 0.CT
+        sequence:
+        - service: script.notification
+          data:
+            critical: true
+            message: smoke alarm in 0.CT technical room
+            title: smoke alarm
+      - conditions:
+        - condition: trigger
+          id:
+          - 1.DM
+        sequence:
+        - service: script.notification
+          data:
+            critical: true
+            message: smoke alarm in 1.DM main bedroom
+            title: smoke alarm
+      - conditions:
+        - condition: trigger
+          id:
+          - 1.DI
+        sequence:
+        - service: script.notification
+          data:
+            critical: true
+            message: smoke alarm in 1.DI interior bedroom
+            title: smoke alarm
+      - conditions:
+        - condition: trigger
+          id:
+          - 1.DE
+        sequence:
+        - service: script.notification
+          data:
+            critical: true
+            message: smoke alarm in 1.DE exterior bedroom
+            title: smoke alarm
+  mode: single
+- id: '1696426965275'
+  alias: 0.GR Mow
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - schedule.mow_schedule
+    to: 'on'
+    id: mow_shedule_on
+  - platform: state
+    entity_id:
+    - lawn_mower.0_gr_landroid
+  - platform: state
+    entity_id:
+    - sensor.0_gr_landroid_battery
+    to: '100'
+    id: battery_full
+    from: '99'
+  - platform: state
+    entity_id:
+    - sensor.0_gr_landroid_error
+    id: error
+  condition:
+  - condition: state
+    entity_id: input_boolean.mow_action_enabled
+    state: 'on'
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - mow_shedule_on
+      sequence:
+      - service: lawn_mower.start_mowing
+        target:
+          entity_id: lawn_mower.0_gr_landroid
+        data: {}
+      - service: script.notification
+        data:
+          info: true
+          title: 0.GR mow
+          message: started based on schedule
+    - conditions:
+      - condition: trigger
+        id:
+        - battery_full
+      sequence:
+      - service: script.notification
+        data:
+          info: true
+          title: 0.GR mow
+          message: battery is full
+    - conditions:
+      - condition: trigger
+        id:
+        - error
+      sequence:
+      - service: script.notification
+        data:
+          info: true
+          title: 0.GR mow
+          message: '{% set value = states(''sensor.0_gr_landroid_error'') %} {% if
+            value == ''no error'' %}error cleared {% else %}error: {{ value }}{% endif%}'
+    - conditions:
+      - condition: state
+        entity_id: lawn_mower.0_gr_landroid
+        state: docked
+      sequence:
+      - service: script.notification
+        data:
+          info: true
+          title: 0.GR mow
+          message: mowing complete, mower is docked
+  mode: single
+- id: '1697789753505'
+  alias: 'away_random: 0.HP light'
+  description: ''
+  use_blueprint:
+    path: homeassistant/randomised_light_at_night.yaml
+    input:
+      target_light: light.shelly_shvin_1_3494546e7416
+      override_switch_entity: input_boolean.manual_override_enabled
+      away_lighting_switch_entity: input_boolean.away_random_lighting_enabled
+      trigger_minutes: 29
+      lights_out_time: '23:59:59'
+      random_delay_max_minutes: 4
+- id: '1697789807505'
+  alias: 'away_random: 1.HE light1'
+  description: ''
+  use_blueprint:
+    path: homeassistant/randomised_light_at_night.yaml
+    input:
+      target_light: light.shelly_shvin_1_3494546f024c
+      override_switch_entity: input_boolean.manual_override_enabled
+      away_lighting_switch_entity: input_boolean.away_random_lighting_enabled
+      trigger_minutes: 30
+      lights_out_time: '23:59:59'
+      random_delay_max_minutes: 8
+- id: '1697789835840'
+  alias: 'away_random: 1.HE light2'
+  description: ''
+  use_blueprint:
+    path: homeassistant/randomised_light_at_night.yaml
+    input:
+      target_light: light.shelly_shvin_1_3494546e7149
+      override_switch_entity: input_boolean.manual_override_enabled
+      away_lighting_switch_entity: input_boolean.away_random_lighting_enabled
+      trigger_minutes: 15
+      lights_out_time: '23:59:59'
+      random_delay_max_minutes: 4
+- id: '1698388208603'
+  alias: 'automation: manual override'
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - input_boolean.manual_override_enabled
+    to: 'on'
+    id: manual-on
+  - platform: state
+    entity_id:
+    - input_boolean.manual_override_enabled
+    to: 'off'
+    id: manual-off
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - manual-on
+      sequence:
+      - service: input_boolean.turn_off
+        data: {}
+        target:
+          entity_id:
+          - input_boolean.mow_action_enabled
+          - input_boolean.roll_action_enabled
+          - input_boolean.climate_1_dm_enabled
+          - input_boolean.away_random_lighting_enabled
+          - input_boolean.security_auto_arm_night_enabled
+          - input_boolean.security_auto_disarm_night_enabled
+          - input_boolean.smoke_alert_enabled
+    - conditions:
+      - condition: trigger
+        id:
+        - manual-off
+      sequence:
+      - service: input_boolean.turn_on
+        data: {}
+        target:
+          entity_id:
+          - input_boolean.mow_action_enabled
+          - input_boolean.roll_action_enabled
+          - input_boolean.alert_alarm_enabled
+          - input_boolean.climate_1_dm_enabled
+          - input_boolean.security_auto_arm_night_enabled
+          - input_boolean.security_auto_disarm_night_enabled
+          - input_boolean.smoke_alert_enabled
+      - if:
+        - condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state: armed_away
+        then:
+        - service: input_boolean.turn_on
+          data: {}
+          target:
+            entity_id:
+            - input_boolean.away_random_lighting_enabled
+  - service: input_boolean.turn_off
+    data: {}
+    target:
+      entity_id:
+      - input_boolean.mow_action_enabled
+      - input_boolean.climate_1_dm_enabled
+  mode: single
+- id: '1699432432395'
+  alias: 'security: auto-arm-night'
+  description: ''
+  trigger:
+  - platform: time
+    at: input_datetime.security_auto_arm_night_time
+  condition:
+  - condition: state
+    entity_id: input_boolean.security_auto_arm_night_enabled
+    state: 'on'
+  - condition: state
+    entity_id: alarm_control_panel.home_alarm
+    state: disarmed
+  action:
+  - service: alarm_control_panel.alarm_arm_night
+    data: {}
+    target:
+      entity_id: alarm_control_panel.home_alarm
+  mode: single
+- id: '1699432628748'
+  alias: 'security: auto-disarm-night'
+  description: ''
+  trigger:
+  - platform: time
+    at: input_datetime.security_auto_disarm_night_time
+  condition:
+  - condition: state
+    entity_id: input_boolean.security_auto_disarm_night_enabled
+    state: 'on'
+  - condition: state
+    entity_id: alarm_control_panel.home_alarm
+    state: armed_night
+  action:
+  - service: alarm_control_panel.alarm_disarm
+    data: {}
+    target:
+      entity_id: alarm_control_panel.home_alarm
+  mode: single
+- id: '1699437323024'
+  alias: 'security: auto-arm-night notification'
+  description: ''
+  trigger:
+  - platform: template
+    value_template: '{{ strptime(states(''sensor.security_auto_arm_night_notification_time''),
+      "%H:%M:%S").strftime("%H:%M") == (now().strftime("%H:%M")) }}'
+  condition:
+  - condition: state
+    entity_id: input_boolean.security_auto_arm_night_enabled
+    state: 'on'
+  - condition: state
+    entity_id: alarm_control_panel.home_alarm
+    state: disarmed
+  action:
+  - service: script.notification
+    data:
+      info: true
+      title: 'security-system: info'
+      message: 'auto-arm-night will happen at: {{ states(''input_datetime.security_auto_arm_night_time'')
+        }}'
+  mode: single
+- id: '1699447504354'
+  alias: 'security: auto-disarm-night notification'
+  description: ''
+  trigger:
+  - platform: template
+    value_template: '{{ strptime(states(''sensor.security_auto_disarm_night_notification_time''),
+      "%H:%M:%S").strftime("%H:%M") == (now().strftime("%H:%M")) }}'
+  condition:
+  - condition: state
+    entity_id: input_boolean.security_auto_disarm_night_enabled
+    state: 'on'
+  - condition: state
+    entity_id: alarm_control_panel.home_alarm
+    state: armed_night
+  action:
+  - service: script.notification
+    data:
+      info: true
+      title: 'security-system: info'
+      message: 'auto-disarm-night will happen at: {{ states(''input_datetime.security_auto_disarm_night_time'')
+        }}'
+  mode: single
+- id: '1699514652384'
+  alias: 'reminder: silvana'
+  description: ''
+  trigger:
+  - platform: time
+    at: '11:50:00'
+  condition:
+  - condition: state
+    entity_id: input_boolean.reminder_silvana_enabled
+    state: 'on'
+  action:
+  - service: notify.mobile_app_silvanas_iphone
+    data:
+      title: 'reminder: silvana'
+      message: veterinar
+  mode: single
+- id: '1699516110146'
+  alias: 'reminder: paul'
+  description: ''
+  trigger:
+  - platform: time
+    at: 09:50:00
+  condition:
+  - condition: state
+    entity_id: input_boolean.reminder_paul_enabled
+    state: 'on'
+  action:
+  - service: notify.mobile_app_pauls_iphone
+    data:
+      title: 'reminder: paul'
+      message: polita facultativa pana pe 24 dec
+  mode: single
+- id: '1699538658847'
+  alias: panic
+  description: ''
+  trigger: []
+  condition: []
+  action:
+  - parallel:
+    - service: input_boolean.turn_on
+      data: {}
+      target:
+        entity_id: input_boolean.manual_override_enabled
+    - service: scene.turn_on
+      data: {}
+      target:
+        entity_id: scene.lights_all_on
+    - service: script.0ts_roll_down
+      data: {}
+      enabled: true
+    - service: script.1dm_roll_down
+      data: {}
+      enabled: true
+    - service: script.notification
+      data:
+        critical: true
+        message: panic
+    - service: alarm_control_panel.alarm_arm_home
+      data: {}
+      target:
+        entity_id: alarm_control_panel.home_alarm
+  mode: single
+- id: '1700060475724'
+  alias: 'security: trigger-alarm-away inside-contacts'
+  description: logic to trigger alarm when contacts from inside door change state
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.security_count_new_inside_door_opened
+  condition:
+  - condition: state
+    entity_id: zone.home
+    state: '0'
+    enabled: true
+  - condition: or
+    conditions:
+    - condition: numeric_state
+      entity_id: sensor.security_count_new_inside_door_opened
+      above: 0
+    - condition: numeric_state
+      entity_id: sensor.security_count_new_inside_door_opened
+      below: 0
+  action:
+  - service: script.notification
+    data:
+      critical: true
+      title: 'security-system: alarm trigger'
+      message: "{% from 'contact_sensor_changes.jinja' import contact_sensor_changes
+        %} {% set resultClosed = contact_sensor_changes(false, false)|trim %} {% set
+        resultClosed = resultClosed.split(';') %} {% set resultOpened = contact_sensor_changes(false,
+        true)|trim %} {% set resultOpened = resultOpened.split(';') %} Count inside
+        open doors changed to {{ states('sensor.security_count_inside_open_contacts')
+        }}. {% if resultOpened[2] %}\n  The new open contact is: {{ resultOpened[2]
+        }}.\n{% elif resultClosed[3] %}\n  The new closed contact is: {{ resultClosed[3]
+        }}.\n{% endif %} Open contacts are {{ states('sensor.security_info_inside_open_doors')
+        }}"
+  - if:
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: armed_away
+      enabled: true
+    then:
+    - service: alarm_control_panel.alarm_trigger
+      data: {}
+      target:
+        entity_id: alarm_control_panel.home_alarm
+      enabled: true
+  mode: single
+- id: '1700219011796'
+  alias: 'panic: undo'
+  description: ''
+  trigger: []
+  condition: []
+  action:
+  - parallel:
+    - service: input_boolean.turn_off
+      data: {}
+      target:
+        entity_id: input_boolean.manual_override_enabled
+    - service: scene.turn_on
+      data: {}
+      target:
+        entity_id: scene.lights_all_off
+    - service: script.1694085505020
+      data: {}
+    - service: script.1dm_roll_up
+      data: {}
+    - service: script.notification
+      data:
+        message: 'panic: undo'
+    - service: alarm_control_panel.alarm_disarm
+      data: {}
+      target:
+        entity_id: alarm_control_panel.home_alarm
+  mode: single
+- id: '1700637881105'
+  alias: 'security: armed-home outside-close-doors'
+  description: when armed home/night and close window/door reset count
+  trigger:
+  - platform: numeric_state
+    entity_id:
+    - sensor.alarm_new_door_opened
+    below: 0
+  condition:
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: armed_home
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: armed_night
+  - condition: state
+    entity_id: input_boolean.manual_override_enabled
+    state: 'off'
+  action:
+  - service: script.notification
+    data:
+      info: true
+      title: 'security-system: closed sensor'
+      message: "{% from 'contact_sensor_changes.jinja' import contact_sensor_changes
+        %} {% set result = contact_sensor_changes(true, false)|trim %} {% set result
+        = result.split(';') %} A door/window has been closed, open contacts are {{
+        states('sensor.info_open_doors') }}. {% if result[3] %}\n  Closed contact
+        is: {{ result[3] }}\n{% elif result[0]=='True' %}\n  There was an error trying
+        to determine closed contact: {{ result[1] }}\n{% endif %}"
+  - service: script.alarm_reset_helpers
+    data: {}
+  mode: single
+- id: '1700730048620'
+  alias: 0.BP inside temperature
+  description: notify when the temperature from cellar goes bellow threshold
+  trigger:
+  - platform: numeric_state
+    entity_id:
+    - sensor.0_bp_door_temperature
+    below: input_number.0_bp_inside_temperature_threshold
+  - platform: time
+    at: input_datetime.0_bp_temperature_threshold_check_time
+  condition:
+  - condition: state
+    entity_id: input_boolean.manual_override_enabled
+    state: 'off'
+  - condition: numeric_state
+    entity_id:
+    - sensor.0_bp_door_temperature
+    below: input_number.0_bp_inside_temperature_threshold
+  action:
+  - service: script.notification
+    data:
+      info: true
+      message: Temperature in cellar is bellow threshold {{ states('input_number.0_bp_inside_temperature_threshold')
+        }}°C. {% if states('binary_sensor.0_bp_window_contact')=="on" %} Close the
+        window! {% endif %}
+  mode: single
+- id: '1700735228437'
+  alias: 0.BP outside temperature
+  description: notify when the temperature from outside goes bellow threshold to be
+    prepared
+  trigger:
+  - platform: numeric_state
+    entity_id:
+    - sensor.temperature_minimum_for_next_24h
+    below: input_number.0_bp_outside_temperature_threshold
+  - platform: time
+    at: input_datetime.0_bp_temperature_threshold_check_time
+  condition:
+  - condition: state
+    entity_id: input_boolean.manual_override_enabled
+    state: 'off'
+  - condition: numeric_state
+    entity_id:
+    - sensor.temperature_minimum_for_next_24h
+    below: input_number.0_bp_outside_temperature_threshold
+  action:
+  - service: script.notification
+    data:
+      info: true
+      message: Outside temperature will be bellow threshold {{ states('input_number.0_bp_outside_temperature_threshold')
+        }}°C ({{ states('sensor.temperature_minimum_for_next_24h') }}°C). {% if states('binary_sensor.0_bp_window_contact')=="on"
+        %} Close the window! {% endif %}
+  mode: single
+- id: '1701506271632'
+  alias: 'smoke: alert-disabled'
+  description: reenable timer and visual ack
+  trigger:
+  - platform: state
+    entity_id:
+    - input_boolean.smoke_alert_enabled
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: input_boolean.manual_override_enabled
+    state: 'off'
+  action:
+  - service: light.turn_on
+    metadata: {}
+    data:
+      rgb_color:
+      - 121
+      - 85
+      - 72
+      effect: blink
+    target:
+      entity_id: light.0_bc_lightbar
+  - service: script.notification
+    data:
+      info: true
+      title: 'smoke: notification'
+      message: alert feature disabled; reenable timer activated
+  - service: timer.start
+    data: {}
+    target:
+      entity_id: timer.smoke_alert_reenable_timer
+  - service: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.0_bc_lightbar
+  mode: single
+- id: '1701506612221'
+  alias: 'smoke: reenable timer'
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - timer.smoke_alert_reenable_timer
+    to: idle
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+    id: smoke-timer-end
+  - platform: state
+    entity_id:
+    - timer.smoke_alert_reenable_timer
+    to: idle
+    for:
+      hours: 0
+      minutes: 2
+      seconds: 0
+    id: smoke-timer-end-delayed
+  condition:
+  - condition: state
+    entity_id: input_boolean.manual_override_enabled
+    state: 'off'
+  - condition: state
+    entity_id: input_boolean.smoke_alert_enabled
+    state: 'off'
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - smoke-timer-end
+      sequence:
+      - service: script.notification
+        data:
+          info: true
+          title: 'smoke: notification'
+          message: alert feature will be automatically enabled in 2 minutes
+      - service: light.turn_on
+        metadata: {}
+        data:
+          rgb_color:
+          - 121
+          - 85
+          - 72
+          effect: breathe
+        target:
+          entity_id: light.0_bc_lightbar
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 10
+          milliseconds: 0
+      - service: light.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: light.0_bc_lightbar
+    - conditions:
+      - condition: trigger
+        id:
+        - smoke-timer-end-delayed
+      sequence:
+      - service: input_boolean.turn_on
+        data: {}
+        target:
+          entity_id: input_boolean.smoke_alert_enabled
+  mode: single
+- id: '1701875054233'
+  alias: 'away_random: 1.DM lights'
+  description: ''
+  use_blueprint:
+    path: homeassistant/randomised_light_at_night.yaml
+    input:
+      target_light: light.1_dm_led_lights
+      override_switch_entity: input_boolean.manual_override_enabled
+      away_lighting_switch_entity: input_boolean.away_random_lighting_enabled
+      trigger_minutes: 15
+      lights_out_time: '23:59:59'
+      random_delay_max_minutes: 4
+- id: '1702217654900'
+  alias: 'away_random: 1.DM main-light'
+  description: ''
+  use_blueprint:
+    path: homeassistant/randomised_light_at_night.yaml
+    input:
+      target_light: switch.1_dm_light_switch_switch
+      override_switch_entity: input_boolean.manual_override_enabled
+      away_lighting_switch_entity: input_boolean.away_random_lighting_enabled
+      trigger_minutes: 15
+      lights_out_time: '23:59:59'
+      random_delay_max_minutes: 4
+- id: '1702372428427'
+  alias: 'smoke: alert-enabled'
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - input_boolean.smoke_alert_enabled
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.manual_override_enabled
+    state: 'off'
+  action:
+  - service: timer.cancel
+    target:
+      entity_id: timer.smoke_alert_reenable_timer
+    data: {}
+  - service: script.notification
+    data:
+      info: true
+      title: 'smoke: notification'
+      message: alert feature enabled
+  - service: light.turn_on
+    metadata: {}
+    data:
+      effect: okay
+    target:
+      entity_id: light.0_bc_lightbar
+  - delay:
+      hours: 0
+      minutes: 1
+      seconds: 0
+      milliseconds: 0
+  - if:
+    - condition: or
+      conditions:
+      - condition: state
+        entity_id: binary_sensor.0lv2_fp2_presence_sensor_presence_sensor_3
+        state: 'off'
+      - condition: state
+        entity_id: switch.0_bc_light_switch
+        state: 'on'
+    then:
+    - service: light.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id: light.0_bc_lightbar
+  mode: single
+- id: '1702558062750'
+  alias: 'away_random: 0.BC light'
+  description: ''
+  use_blueprint:
+    path: homeassistant/randomised_light_at_night.yaml
+    input:
+      target_light: switch.0_bc_light_switch
+      override_switch_entity: input_boolean.manual_override_enabled
+      away_lighting_switch_entity: input_boolean.away_random_lighting_enabled
+      trigger_minutes: 9
+      lights_out_time: '23:59:59'
+      random_delay_max_minutes: 4
+- id: '1702558140933'
+  alias: 'away_random: 1.BS light'
+  description: ''
+  use_blueprint:
+    path: homeassistant/randomised_light_at_night.yaml
+    input:
+      target_light: switch.1_bs_main_light_switch
+      override_switch_entity: input_boolean.manual_override_enabled
+      away_lighting_switch_entity: input_boolean.away_random_lighting_enabled
+      trigger_minutes: 60
+      lights_out_time: '23:59:59'
+      random_delay_max_minutes: 4
+- id: '1702558182433'
+  alias: 'away_random: 0.BP light'
+  description: ''
+  use_blueprint:
+    path: homeassistant/randomised_light_at_night.yaml
+    input:
+      target_light: switch.0_bp_light_switch
+      override_switch_entity: input_boolean.manual_override_enabled
+      away_lighting_switch_entity: input_boolean.away_random_lighting_enabled
+      trigger_minutes: 90
+      lights_out_time: '23:59:59'
+      random_delay_max_minutes: 3
+- id: '1702653177625'
+  alias: 'away_random: 0.BJ main-light'
+  description: ''
+  use_blueprint:
+    path: homeassistant/randomised_light_at_night.yaml
+    input:
+      target_light: switch.0_bj_main_light_switch
+      override_switch_entity: input_boolean.manual_override_enabled
+      away_lighting_switch_entity: input_boolean.away_random_lighting_enabled
+      trigger_minutes: 90
+      lights_out_time: '23:59:59'
+      random_delay_max_minutes: 4
+- id: '1702653211809'
+  alias: 'away_random: 0.CT light'
+  description: ''
+  use_blueprint:
+    path: homeassistant/randomised_light_at_night.yaml
+    input:
+      target_light: switch.0_ct_light_switch
+      override_switch_entity: input_boolean.manual_override_enabled
+      away_lighting_switch_entity: input_boolean.away_random_lighting_enabled
+      trigger_minutes: 120
+      lights_out_time: '23:59:59'
+      random_delay_max_minutes: 4
+- id: '1702653265042'
+  alias: 'away_random: 0.BR light'
+  description: ''
+  use_blueprint:
+    path: homeassistant/randomised_light_at_night.yaml
+    input:
+      target_light: switch.0_br_light_switch
+      override_switch_entity: input_boolean.manual_override_enabled
+      away_lighting_switch_entity: input_boolean.away_random_lighting_enabled
+      trigger_minutes: 120
+      lights_out_time: '23:59:59'
+      random_delay_max_minutes: 10
+- id: '1702977054623'
+  alias: 'alert_alarm: gas acknowledged'
+  description: ''
+  trigger: []
+  condition: []
+  action:
+  - parallel:
+    - service: script.notification
+      data:
+        title: 'alert: notification'
+        message: gas leak acknowledged
+    - service: media_player.media_stop
+      target:
+        entity_id: media_player.alert_media
+      data: {}
+    - if:
+      - condition: state
+        entity_id: binary_sensor.gas_sensor_gas
+        state: 'on'
+      then:
+      - service: scene.turn_on
+        target:
+          entity_id: scene.gas_sensor_silence_off
+        data: {}
+      - if:
+        - condition: not
+          conditions:
+          - condition: state
+            entity_id: switch.0_ct_plug_heater
+            state: 'on'
+        then:
+        - service: script.notification
+          data:
+            title: reminder
+            message: plug in "0.CT plug heater"
+      alias: 0.CT
+    - if:
+      - condition: state
+        entity_id: binary_sensor.0_bc_gas_gas
+        state: 'on'
+      then:
+      - service: select.select_option
+        metadata: {}
+        data:
+          option: mute
+        target:
+          entity_id: select.0_bc_gas_buzzer
+      alias: 0.BC
+  mode: single
+- id: '1703589109821'
+  alias: 'vacuum: unavailable'
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - vacuum.0bc_roborock_s7_maxv
+    to: unavailable
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  condition:
+  - condition: state
+    entity_id: input_boolean.manual_override_enabled
+    state: 'off'
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: sensor.0bc_roborock_s7_maxv_status
+      state: cleaning
+  action:
+  - service: script.notification
+    data:
+      info: true
+      message: vacuum became unavailable, check power
+  mode: single
+- id: '1703881651410'
+  alias: 0.CT motion-light
+  description: ''
+  use_blueprint:
+    path: homeassistant/_motion_light.yaml
+    input:
+      lux_entity: sensor.0_ct_motion_illuminance_lux
+      lux_level: 10
+      motion_entity: binary_sensor.0_ct_motion_occupancy
+      no_motion_wait: 10
+      target_entity: switch.0_ct_light_switch
+      door_entity: binary_sensor.0_ct_door_contact
+      turn_light_off_when_door_closes: true
+      debug: false
+- id: '1703930480217'
+  alias: 01.CS switch
+  description: ''
+  use_blueprint:
+    path: homeassistant/_aqara_h1_remote_switch.yaml
+    input:
+      button_sensor: sensor.01_cs_switch_action
+      single_left:
+      - if:
+        - condition: state
+          entity_id: light.1_he_lights
+          state: 'off'
+        then:
+        - service: light.turn_on
+          target:
+            entity_id: light.1_he_lights
+          data: {}
+        else:
+        - service: light.turn_off
+          target:
+            entity_id:
+            - light.1_he_lights
+            device_id: []
+            area_id: []
+          data: {}
+      single_right:
+      - if:
+        - condition: state
+          entity_id: light.shelly_shvin_1_3494546e7416
+          state: 'off'
+        then:
+        - service: light.turn_on
+          data: {}
+          target:
+            entity_id: light.shelly_shvin_1_3494546e7416
+        else:
+        - service: light.turn_off
+          target:
+            entity_id:
+            - light.shelly_shvin_1_3494546e7416
+            device_id: []
+            area_id: []
+          data: {}
+      hold_right:
+      - service: scene.turn_on
+        target:
+          entity_id: scene.lights_all_off
+        data: {}
+      single_both:
+      - service: automation.trigger
+        target:
+          entity_id: automation.panic
+        data:
+          skip_condition: true
+      double_both:
+      - service: automation.trigger
+        data:
+          skip_condition: true
+        target:
+          entity_id: automation.panic_undo
+      button_action_topic: zigbee2mqtt/01.CS switch/action
+- id: '1703944443669'
+  alias: 0.BJ motion-light
+  description: ''
+  use_blueprint:
+    path: homeassistant/_motion_light.yaml
+    input:
+      lux_entity: sensor.0_bj_motion_illuminance_lux
+      motion_entity: binary_sensor.0_bj_motion_occupancy
+      target_entity: switch.0_bj_main_light_switch
+      door_entity: binary_sensor.0_bj_door_contact
+      last_motion_entity: sensor.0_bj_last_motion
+      no_motion_wait: 90
+- id: '1703968756886'
+  alias: 1.HE motion-light
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.01_cs_motion_occupancy
+  - platform: state
+    entity_id:
+    - binary_sensor.01_cs_motion_occupancy
+    id: motion_clear_delay
+    to: 'off'
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+  condition:
+  - condition: state
+    entity_id: input_boolean.manual_override_enabled
+    state: 'off'
+  - condition: or
+    conditions:
+    - condition: numeric_state
+      entity_id: zone.home
+      above: 0
+    - condition: state
+      entity_id: input_boolean.home_guest_presence
+      state: 'on'
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.01_cs_motion_occupancy
+        state: 'on'
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: binary_sensor.0lv2_fp2_presence_sensor_presence_sensor_2
+          state: 'on'
+        enabled: false
+      sequence:
+      - service: light.turn_on
+        target:
+          entity_id: light.1_he_lights
+        data: {}
+    - conditions:
+      - condition: trigger
+        id:
+        - motion_clear_delay
+      sequence:
+      - service: light.turn_off
+        target:
+          entity_id: light.1_he_lights
+        data: {}
+  mode: single
+- id: '1704017596979'
+  alias: 'away_random: 0.LV1 light'
+  description: ''
+  use_blueprint:
+    path: homeassistant/randomised_light_at_night.yaml
+    input:
+      target_light: light.0_lv1_lights
+      override_switch_entity: input_boolean.manual_override_enabled
+      away_lighting_switch_entity: input_boolean.away_random_lighting_enabled
+      lights_out_time: '23:59:59'
+- id: '1704017999352'
+  alias: 'away_random: 0.LV2 light'
+  description: ''
+  use_blueprint:
+    path: homeassistant/randomised_light_at_night.yaml
+    input:
+      target_light: light.0_lv2_lights
+      override_switch_entity: input_boolean.manual_override_enabled
+      away_lighting_switch_entity: input_boolean.away_random_lighting_enabled
+      lights_out_time: '23:59:59'
+- id: '1704023447399'
+  alias: 1.BS motion-light
+  description: ''
+  use_blueprint:
+    path: homeassistant/_motion_light.yaml
+    input:
+      motion_entity: binary_sensor.1_bs_motion_occupancy
+      target_entity: switch.1_bs_main_light_switch
+      no_motion_wait: 120
+      lux_entity: sensor.1_bs_motion_illuminance_lux
+      lux_level: 20
+      blocking_condition:
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: armed_night
+        enabled: true
+      blocking_condition_turn_on:
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: armed_night
+        enabled: true
+      door_entity: binary_sensor.1_bs_door_contact
+      last_motion_entity: sensor.1_bs_last_motion
+  trace:
+    stored_traces: 20
+- id: '1704030763151'
+  alias: 0.LV1 multi-button
+  description: ''
+  use_blueprint:
+    path: homeassistant/_moes_switch_4_button.yaml
+    input:
+      button_sensor: sensor.0_lv1_multi_button_action
+      single_top_left:
+      - service: script.light_on_template
+        data:
+          entity_id: light.0_lv1_lights
+          brightness_pct: 100
+      single_bottom_left:
+      - service: scene.turn_on
+        target:
+          entity_id: scene.0_lv1_night_lights
+        data: {}
+      single_bottom_right:
+      - service: scene.turn_on
+        data: {}
+        target:
+          entity_id: scene.0_lv2_night_lights
+      hold_bottom_right:
+      - service: light.turn_off
+        target:
+          entity_id: light.0_lv2_lights
+        data: {}
+      hold_bottom_left:
+      - service: light.turn_off
+        data: {}
+        target:
+          entity_id: light.0_lv1_lights
+      single_top_right:
+      - service: script.light_on_template
+        data:
+          entity_id: light.0_lv2_lights
+          brightness_pct: 100
+      button_action_topic: zigbee2mqtt/0.LV1 multi-button/action
+- id: '1704042503484'
+  alias: 0.LV1 button
+  description: ''
+  use_blueprint:
+    path: homeassistant/_aqara_t1_mini_button.yaml
+    input:
+      button_sensor: sensor.0_lv1_button_action
+      single_press:
+      - if:
+        - condition: state
+          entity_id: light.0_lv1_lightbulb1
+          state: 'off'
+        then:
+        - service: light.turn_on
+          data: {}
+          target:
+            entity_id: light.0_lv1_lightbulb1
+        else:
+        - if:
+          - condition: state
+            entity_id: light.0_lv1_lightbulb3
+            state: 'off'
+          then:
+          - service: light.turn_on
+            data: {}
+            target:
+              entity_id: light.0_lv1_lightbulb3
+          else:
+          - if:
+            - condition: state
+              entity_id: light.0_lv1_lightbulb2
+              state: 'off'
+            then:
+            - service: light.turn_on
+              data: {}
+              target:
+                entity_id: light.0_lv1_lightbulb2
+            else:
+            - service: light.turn_off
+              target:
+                entity_id: light.0_lv1_lights
+              data: {}
+      double_press:
+      - if:
+        - condition: state
+          entity_id: light.0_lv2_lightbulb1
+          state: 'off'
+        then:
+        - service: light.turn_on
+          target:
+            entity_id: light.0_lv2_lightbulb1
+          data: {}
+        else:
+        - if:
+          - condition: state
+            entity_id: light.0_lv2_lightbulb2
+            state: 'off'
+          then:
+          - service: light.turn_on
+            data: {}
+            target:
+              entity_id: light.0_lv2_lightbulb2
+          else:
+          - service: light.turn_off
+            target:
+              entity_id: light.0_lv2_lights
+            data: {}
+      hold:
+      - if:
+        - condition: state
+          entity_id: light.1_dm_led_lights
+          state: 'off'
+        then:
+        - service: light.turn_on
+          data: {}
+          target:
+            entity_id: light.shelly_shvin_1_3494546f024c
+        - service: script.1dm_night_lights
+          data: {}
+        else:
+        - service: light.turn_off
+          target:
+            entity_id:
+            - light.1_he_lights
+            - light.1_dm_led_lights
+          data: {}
+      button_action_topic: zigbee2mqtt/0.LV1 button/action
+- id: '1704043826934'
+  alias: 0.BC smoke-button
+  description: ''
+  use_blueprint:
+    path: homeassistant/_aqara_t1_mini_button.yaml
+    input:
+      button_sensor: sensor.0_bc_smoke_button_action
+      single_press:
+      - if:
+        - condition: state
+          entity_id: input_boolean.smoke_alert_enabled
+          state: 'off'
+        then:
+        - service: timer.start
+          target:
+            entity_id: timer.smoke_alert_reenable_timer
+          data: {}
+        else:
+        - if:
+          - condition: state
+            entity_id: binary_sensor.smoke_sensors
+            state: 'on'
+          then:
+          - service: automation.trigger
+            metadata: {}
+            data:
+              skip_condition: true
+            target:
+              entity_id: automation.alert_alarm_smoke_acknowledged
+      double_press:
+      - service: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.smoke_alert_enabled
+        data: {}
+      hold:
+      - service: input_boolean.turn_on
+        target:
+          entity_id:
+          - input_boolean.smoke_alert_enabled
+          device_id: []
+          area_id: []
+        data: {}
+      button_action_topic: zigbee2mqtt/0.BC smoke-button/action
+- id: '1704099159078'
+  alias: 1.DM button
+  description: ''
+  use_blueprint:
+    path: homeassistant/_aqara_t1_mini_button.yaml
+    input:
+      button_sensor: sensor.1_dm_button_action
+      single_press:
+      - if:
+        - condition: state
+          entity_id: light.1_dm_led_lights
+          state: 'on'
+        then:
+        - service: light.turn_off
+          data: {}
+          target:
+            entity_id: light.1_dm_led_lights
+        else:
+        - service: script.1dm_night_lights
+          data: {}
+      double_press: []
+      hold:
+      - service: scene.turn_on
+        data: {}
+        target:
+          entity_id: scene.lights_all_off
+      button_action_topic: zigbee2mqtt/1.DM button/action
+- id: '1704100218690'
+  alias: 0.BR motion-light
+  description: ''
+  use_blueprint:
+    path: homeassistant/_motion_light.yaml
+    input:
+      lux_entity: sensor.0_br_motion_illuminance_lux
+      lux_level: 20
+      motion_entity: binary_sensor.0_br_motion_occupancy
+      no_motion_wait: 60
+      target_entity: switch.0_br_light_switch
+- id: '1704112887553'
+  alias: 'battery: notification on low'
+  description: ''
+  use_blueprint:
+    path: homeassistant/_low_battery.yaml
+    input:
+      exclude:
+        entity_id:
+        - sensor.silvanas_iphone_battery_level
+        - sensor.paul_s_and_silvana_s_comanici_ipad_battery_level
+        - sensor.pauls_iphone_battery_level
+      actions:
+      - service: script.notification
+        data:
+          info: true
+          message: The battery of the sensor(s) {{sensors}} is low.
+      threshold: 20
+- id: '1704113497460'
+  alias: 'power: outage'
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - alarm_control_panel.1dm_aqara_hub_security_system
+    to: unavailable
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 5
+  - platform: state
+    entity_id:
+    - alarm_control_panel.1dm_aqara_hub_security_system
+    to: unknown
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 5
+  condition:
+  - condition: state
+    entity_id: update.home_assistant_core_update
+    attribute: in_progress
+    state: false
+  - condition: state
+    entity_id: update.home_assistant_operating_system_update
+    attribute: in_progress
+    state: false
+  - condition: state
+    entity_id: update.home_assistant_supervisor_update
+    attribute: in_progress
+    state: false
+  action:
+  - service: script.notification
+    data:
+      info: true
+      message: there may be a power-outage
+  mode: single
+- id: '1704215887544'
+  alias: test
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.1_di_switch_action
+  - platform: state
+    entity_id:
+    - binary_sensor.0_bj_motion_occupancy
+    to:
+    - 'on'
+    - 'off'
+  - platform: state
+    entity_id:
+    - binary_sensor.0_bj_motion_occupancy
+    to: 'off'
+    for:
+      seconds: '{{ variable_my|float }}'
+  condition: []
+  action:
+  - if:
+    - condition: template
+      value_template: '{{ debug==true }}'
+    then:
+    - service: notify.persistent_notification
+      metadata: {}
+      data:
+        message: is_door_closed -> {{ is_door_closed }}" keep_light_on -> {{ keep_light_on
+          }}" use_target_entity_off -> {{ use_target_entity_off }}" use_target_entity_off_as_light
+          -> {{ use_target_entity_off_as_light }}"
+  - service: notify.persistent_notification
+    metadata: {}
+    data:
+      message: aaa
+  - choose:
+    - conditions: []
+      sequence: []
+  mode: single
+- id: '1704708265129'
+  alias: dehumidifier
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.dehumidifier_schedule
+  - platform: state
+    entity_id:
+    - input_boolean.dehumidify_action_enabled
+  - platform: state
+    entity_id:
+    - sensor.d25_traditio_humidity
+  - platform: state
+    entity_id:
+    - humidifier.d25_traditio
+    attribute: humidity
+  condition:
+  - condition: state
+    entity_id: input_boolean.manual_override_enabled
+    state: 'off'
+  action:
+  - if:
+    - condition: state
+      entity_id: binary_sensor.dehumidifier_schedule
+      state: 'on'
+    - condition: numeric_state
+      entity_id: humidifier.d25_traditio
+      below: sensor.d25_traditio_humidity
+      attribute: humidity
+    - condition: state
+      entity_id: input_boolean.dehumidify_action_enabled
+      state: 'on'
+    then:
+    - service: humidifier.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: humidifier.d25_traditio
+    else:
+    - if:
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: binary_sensor.dehumidifier_schedule
+          state: 'off'
+        - condition: numeric_state
+          entity_id: humidifier.d25_traditio
+          above: sensor.d25_traditio_humidity
+          attribute: humidity
+        - condition: state
+          entity_id: input_boolean.dehumidify_action_enabled
+          state: 'off'
+      then:
+      - service: humidifier.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: humidifier.d25_traditio
+  mode: single
+- id: '1704805434464'
+  alias: 1.DR motion-light
+  description: ''
+  use_blueprint:
+    path: homeassistant/_motion_light.yaml
+    input:
+      motion_entity: binary_sensor.1_dr_motion_occupancy
+      target_entity: light.1_dr_lights
+      no_motion_wait: 30
+      lux_entity: sensor.1_dr_motion_illuminance_lux
+      lux_level: 10
+      blocking_condition: []
+- id: '1705071705651'
+  alias: 'away_random: 1.DRM main-light'
+  description: ''
+  use_blueprint:
+    path: homeassistant/randomised_light_at_night.yaml
+    input:
+      target_light: switch.1_drm_main_switch
+      override_switch_entity: input_boolean.manual_override_enabled
+      away_lighting_switch_entity: input_boolean.away_random_lighting_enabled
+      trigger_minutes: 15
+      lights_out_time: '23:59:59'
+      random_delay_max_minutes: 4
+- id: '1705128554985'
+  alias: 1.DRM motion-light
+  description: ''
+  use_blueprint:
+    path: homeassistant/_motion_light.yaml
+    input:
+      lux_entity: sensor.1_drm_motion_illuminance_lux
+      lux_level: 10
+      motion_entity: binary_sensor.1_drm_motion_occupancy
+      no_motion_wait: 10
+      target_entity: switch.1_drm_main_switch
+      blocking_condition_turn_on:
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: armed_night
+- id: '1705417119625'
+  alias: 'away_random: 1.DI light1'
+  description: ''
+  use_blueprint:
+    path: homeassistant/randomised_light_at_night.yaml
+    input:
+      target_light: light.1_di_lightbulb1
+      override_switch_entity: input_boolean.manual_override_enabled
+      away_lighting_switch_entity: input_boolean.away_random_lighting_enabled
+      trigger_minutes: 30
+      lights_out_time: '23:59:59'
+      random_delay_max_minutes: 8
+- id: '1705417163124'
+  alias: 'away_random: 1.DI light2'
+  description: ''
+  use_blueprint:
+    path: homeassistant/randomised_light_at_night.yaml
+    input:
+      target_light: light.1_di_lightbulb2
+      override_switch_entity: input_boolean.manual_override_enabled
+      away_lighting_switch_entity: input_boolean.away_random_lighting_enabled
+      trigger_minutes: 30
+      lights_out_time: '23:59:59'
+      random_delay_max_minutes: 8
+- id: '1706112435067'
+  alias: 'alert_alarm: smoke acknowledged'
+  description: ''
+  trigger: []
+  condition: []
+  action:
+  - parallel:
+    - service: script.notification
+      data:
+        title: 'alert: notification'
+        message: smoke alert acknowledged
+    - service: media_player.media_stop
+      target:
+        entity_id: media_player.alert_media
+      data: {}
+    - if:
+      - condition: state
+        entity_id: switch.0_ct_smoke_alarm
+        state: 'on'
+      then:
+      - service: switch.turn_on
+        target:
+          entity_id: switch.0_ct_smoke_silence_siren
+        data: {}
+      alias: 0.CT smoke
+    - if:
+      - condition: state
+        entity_id: switch.1_dm_smoke_alarm
+        state: 'on'
+      then:
+      - service: switch.turn_on
+        data: {}
+        target:
+          entity_id: switch.1_dm_smoke_silence_siren
+      alias: 1.DM smoke
+    - if:
+      - condition: state
+        entity_id: binary_sensor.1_di_smoke_smoke
+        state: 'on'
+      then:
+      - service: select.select_option
+        metadata: {}
+        data:
+          option: mute
+        target:
+          entity_id: select.1_di_smoke_buzzer
+      alias: 1.DI smoke
+    - alias: 1.DE smoke
+      if:
+      - condition: state
+        entity_id: binary_sensor.1_de_smoke_smoke
+        state: 'on'
+      then:
+      - service: select.select_option
+        metadata: {}
+        data:
+          option: mute
+        target:
+          entity_id: select.1_de_smoke_buzzer
+  mode: single
+- id: '1706703494828'
+  alias: 1.DM bed-occupied
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.1_dm_bed_occupied
+    id: bed_occupied_change
+  - platform: state
+    entity_id:
+    - binary_sensor.1_dm_bed_occupancy_paul
+    id: bed_occupancy_paul
+  - platform: state
+    entity_id:
+    - binary_sensor.1_dm_bed_occupancy_silvana
+    id: bed_occupancy_silvana
+  condition:
+  - condition: state
+    entity_id: input_boolean.manual_override_enabled
+    state: 'off'
+  action:
+  - if:
+    - condition: sun
+      after: sunset
+      before: sunrise
+    then:
+    - alias: both in bed and no guest => turn off ground floor lights
+      if:
+      - condition: state
+        entity_id: binary_sensor.1_dm_bed_occupied
+        state: 'on'
+      - condition: state
+        entity_id: input_boolean.home_guest_presence
+        state: 'off'
+      then:
+      - service: homeassistant.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: group.lights_ground_floor
+      else:
+      - alias: when someone gets out of bed turn on the led-strip
+        if:
+        - condition: or
+          conditions:
+          - condition: state
+            entity_id: binary_sensor.1_dm_bed_occupancy_paul
+            state: 'off'
+            for:
+              hours: 0
+              minutes: 0
+              seconds: 0
+          - condition: state
+            entity_id: binary_sensor.1_dm_bed_occupancy_silvana
+            state: 'off'
+            for:
+              hours: 0
+              minutes: 0
+              seconds: 0
+        then:
+        - service: light.turn_on
+          metadata: {}
+          data:
+            rgb_color:
+            - 0
+            - 0
+            - 0
+            color_name: orange
+            brightness_pct: 10
+          target:
+            entity_id: light.1_dm_led_strip
+    - alias: someone comes in bed => turn off led-strip
+      if:
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: binary_sensor.1_dm_bed_occupancy_paul
+          state: 'on'
+          for:
+            hours: 0
+            minutes: 0
+            seconds: 0
+        - condition: state
+          entity_id: binary_sensor.1_dm_bed_occupancy_silvana
+          state: 'on'
+          for:
+            hours: 0
+            minutes: 0
+            seconds: 0
+      then:
+      - service: light.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: light.1_dm_led_strip
+      else:
+      - alias: when someone gets out of bed turn on the led-strip
+        if:
+        - condition: or
+          conditions:
+          - condition: state
+            entity_id: binary_sensor.1_dm_bed_occupancy_paul
+            state: 'off'
+            for:
+              hours: 0
+              minutes: 0
+              seconds: 0
+          - condition: state
+            entity_id: binary_sensor.1_dm_bed_occupancy_silvana
+            state: 'off'
+            for:
+              hours: 0
+              minutes: 0
+              seconds: 0
+        then:
+        - service: light.turn_on
+          metadata: {}
+          data:
+            rgb_color:
+            - 0
+            - 0
+            - 0
+            color_name: orange
+            brightness_pct: 10
+          target:
+            entity_id: light.1_dm_led_strip
+    else:
+    - alias: after sunrise and before sunset
+      if:
+      - condition: sun
+        after: sunrise
+        before: sunset
+      then:
+      - if:
+        - condition: state
+          entity_id: binary_sensor.1_dm_bed_occupancy_silvana
+          state: 'off'
+          for:
+            hours: 0
+            minutes: 1
+            seconds: 0
+        then:
+        - service: script.1dm_roll_up
+          metadata: {}
+          data: {}
+        alias: after silvana gets up fully raise the roller shades
+  mode: single
+- id: '1706797521731'
+  alias: 1.DRM switch-light control
+  description: ''
+  use_blueprint:
+    path: homeassistant/_switch_lightbulb.yaml
+    input:
+      light_entity: light.1_drm_lightbulb
+      script_day_lights: script.light_on_template
+      script_night_lights: script.light_turn_on_night_template
+      switch_entity: switch.1_drm_main_switch
+- id: '1706947241925'
+  alias: 0.BP motion-light
+  description: ''
+  use_blueprint:
+    path: homeassistant/_motion_light.yaml
+    input:
+      door_entity: binary_sensor.0_bp_door_contact
+      lux_entity: sensor.0_bp_motion_illuminance_lux
+      motion_entity: binary_sensor.0_bp_motion_occupancy
+      no_motion_wait: 60
+      target_entity: switch.0_bp_light_switch
+      turn_light_off_when_door_closes: true
+      lux_level: 50
+- id: '1707126149351'
+  alias: 1.DRM button
+  description: ''
+  use_blueprint:
+    path: homeassistant/_ikea_e2002_button.yaml
+    input:
+      controller_entity: sensor.1_drm_button_action
+      light_large_push:
+      - alias: increase intensity
+        if:
+        - condition: state
+          entity_id: switch.1_drm_main_switch
+          state: 'off'
+        then:
+        - service: switch.turn_on
+          metadata: {}
+          data: {}
+          target:
+            entity_id: switch.1_drm_main_switch
+        else:
+        - service: light.turn_on
+          metadata: {}
+          data:
+            brightness_step_pct: '{{ light_dim_step|int }}'
+          target:
+            entity_id: '{{ light_entity }}'
+      light_large_hold:
+      - alias: on/off toggle
+        if:
+        - condition: state
+          entity_id: switch.1_drm_main_switch
+          state: 'off'
+        then:
+        - service: switch.turn_on
+          metadata: {}
+          data: {}
+          target:
+            entity_id: switch.1_drm_main_switch
+        else:
+        - service: switch.turn_off
+          target:
+            entity_id:
+            - switch.1_drm_main_switch
+          data: {}
+      light_entity: light.1_drm_lightbulb
+      light_small_push:
+      - alias: decrease intensity
+        if:
+        - condition: state
+          entity_id: switch.1_drm_main_switch
+          state: 'off'
+        then:
+        - service: switch.turn_on
+          metadata: {}
+          data: {}
+          target:
+            entity_id: switch.1_drm_main_switch
+        else:
+        - service: light.turn_on
+          metadata: {}
+          data:
+            brightness_step_pct: -{{ light_dim_step|int }}
+          target:
+            entity_id: '{{ light_entity }}'
+      arrow_left_push:
+      - choose:
+        - conditions:
+          - condition: template
+            value_template: '{{ light_rgb_color == (255, 254, 254) }}'
+          sequence:
+          - service: light.turn_on
+            target:
+              entity_id: '{{ light_entity }}'
+            data:
+              rgb_color:
+              - 255
+              - 0
+              - 0
+        - conditions:
+          - condition: template
+            value_template: '{{ light_rgb_color == (255, 0, 0) }}'
+          sequence:
+          - service: light.turn_on
+            target:
+              entity_id: '{{ light_entity }}'
+            data:
+              rgb_color:
+              - 0
+              - 255
+              - 0
+        - conditions:
+          - condition: template
+            value_template: '{{ light_rgb_color == (0, 255, 0) }}'
+          sequence:
+          - service: light.turn_on
+            target:
+              entity_id: '{{ light_entity }}'
+            data:
+              rgb_color:
+              - 0
+              - 0
+              - 255
+        - conditions:
+          - condition: template
+            value_template: '{{ light_rgb_color == (0, 0, 255) }}'
+          sequence:
+          - service: light.turn_on
+            target:
+              entity_id: '{{ light_entity }}'
+            data:
+              rgb_color:
+              - 255
+              - 255
+              - 0
+        default:
+        - service: light.turn_on
+          target:
+            entity_id: '{{ light_entity }}'
+          data:
+            rgb_color:
+            - 255
+            - 255
+            - 255
+- id: '1707158640591'
+  alias: 'alert_alarm: flood acknowledged'
+  description: ''
+  trigger: []
+  condition: []
+  action:
+  - parallel:
+    - service: script.notification
+      data:
+        title: 'alert: notification'
+        message: flood leak acknowledged
+    - service: media_player.media_stop
+      target:
+        entity_id: media_player.alert_media
+      data: {}
+  mode: single
+- id: '1707305333797'
+  alias: 'maintenance: unavailable sensors'
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.unavailable
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+  condition:
+  - condition: state
+    entity_id: input_boolean.manual_override_enabled
+    state: 'off'
+  - condition: state
+    entity_id: update.home_assistant_core_update
+    attribute: in_progress
+    state: false
+  - condition: state
+    entity_id: update.home_assistant_operating_system_update
+    attribute: in_progress
+    state: false
+  - condition: template
+    value_template: '{{ states(''sensor.unavailable'')!=''none'' and states(''sensor.unavailable'')!=''unknown''
+      and states(''sensor.unavailable'')!=''unavailable'' }}'
+  action:
+  - if:
+    - condition: state
+      entity_id: sensor.unavailable
+      state: too-many-entities
+    then:
+    - service: script.notification
+      metadata: {}
+      data:
+        title: unavailable sensors
+        message: '{%- set ns = namespace(sensors=[]) -%} {%- set ns.sensors = states  |
+          selectattr(''state'', ''eq'', ''unavailable'') | rejectattr(''entity_id'',
+          ''in'', state_attr(''group.ignore_unavailable_entities'', ''entity_id''))
+          | rejectattr(''entity_id'', ''eq'', ''group.ignore_unavailable_entities'')
+          | map(attribute=''name'') | list -%} {%- if (ns.sensors | count > 0) -%}
+          {{ ns.sensors | list | join('', '') }} {%- else -%} none {%- endif %}'
+    else:
+    - service: script.notification
+      metadata: {}
+      data:
+        title: unavailable sensors
+        message: '{{ states(''sensor.unavailable'') }}'
+  mode: single
+- id: '1707486392522'
+  alias: 0.BC presence-light day
+  description: ''
+  use_blueprint:
+    path: homeassistant/_motion_light.yaml
+    input:
+      lux_entity: sensor.0lv2_fp2_presence_sensor_light_sensor_light_level
+      lux_level: 50
+      motion_entity: binary_sensor.0lv2_fp2_presence_sensor_presence_sensor_3
+      target_entity: switch.0_bc_light_switch
+      blocking_condition_turn_on:
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: armed_night
+      no_motion_wait: 60
+      debug: false
+- id: '1707486487555'
+  alias: 0.BC presence-light night
+  description: ''
+  use_blueprint:
+    path: homeassistant/_motion_light.yaml
+    input:
+      lux_entity: sensor.0lv2_fp2_presence_sensor_light_sensor_light_level
+      lux_level: 45
+      motion_entity: binary_sensor.0lv2_fp2_presence_sensor_presence_sensor_3
+      target_entity: script.0_bc_lightbar
+      blocking_condition_turn_on:
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state: armed_night
+        enabled: true
+      no_motion_wait: 30
+      target_entity_off: light.0_bc_lightbar
+- id: '1707723557011'
+  alias: 1.DM roll-status
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.1_dm_roll_up_contact
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: input_boolean.manual_override_enabled
+    state: 'off'
+  action:
+  - if:
+    - condition: state
+      entity_id: binary_sensor.1_dm_roll_down_contact
+      state: 'off'
+    then:
+    - service: notify.persistent_notification
+      metadata: {}
+      data:
+        title: 1.DM roll
+        message: down sensor reports that is closed; should say open
+  mode: single
+- id: '1707836268474'
+  alias: 0.BJ high-humidity
+  description: ''
+  use_blueprint:
+    path: homeassistant/_high_humidity.yaml
+    input:
+      actions:
+      - service: script.notification
+        metadata: {}
+        data:
+          info: true
+          title: high humidity
+          message: open the window from the ground floor bathroom
+      alert_timer: timer.0_bj_humidity_alert_timer
+      humidity_entity: sensor.0_bj_tvoc_humidity
+      humidity_threshold: input_number.humidity_bathroom_threshold
+      window_entity: binary_sensor.0_bj_window_contact
+- id: '1707837457062'
+  alias: 1.BS high-humidity
+  description: ''
+  use_blueprint:
+    path: homeassistant/_high_humidity.yaml
+    input:
+      alert_timer: timer.1_bs_humidity_alert_timer
+      humidity_entity: sensor.1_bs_tvoc_humidity
+      humidity_threshold: input_number.humidity_bathroom_threshold
+      window_entity: binary_sensor.1_bs_window_contact
+      actions:
+      - service: script.notification
+        metadata: {}
+        data:
+          info: true
+          title: high humidity
+          message: open the window from the upstairs bathroom
+- id: '1707910165007'
+  alias: 1.DI switch
+  description: ''
+  use_blueprint:
+    path: homeassistant/_z2m_philips_hue_dimmer_switch.yaml
+    input:
+      dimmer_switch_action_topic: zigbee2mqtt/1.DI switch/action
+      light_entity: light.1_di_lights
+      button_on_press:
+      - if:
+        - condition: state
+          entity_id: light.1_di_lights
+          state: 'on'
+        then:
+        - service: light.turn_off
+          metadata: {}
+          data: {}
+          target:
+            entity_id: light.1_di_lights
+        else:
+        - service: light.turn_on
+          target:
+            entity_id:
+            - light.1_di_lights
+          data: {}
+      button_dim_up_press:
+      - alias: increase intensity
+        if:
+        - condition: state
+          entity_id: light.1_di_lights
+          state: 'off'
+        then:
+        - service: light.turn_on
+          metadata: {}
+          data: {}
+          target:
+            entity_id: light.1_di_lights
+        else:
+        - service: light.turn_on
+          metadata: {}
+          data:
+            brightness_step_pct: '{{ light_dim_step|int }}'
+          target:
+            entity_id: '{{ light_entity }}'
+      button_dim_up_hold:
+      - alias: set intensity to maximum
+        service: light.turn_on
+        metadata: {}
+        data:
+          brightness_pct: 100
+        target:
+          entity_id: '{{ light_entity }}'
+      button_dim_down_press:
+      - alias: decrease intensity
+        if:
+        - condition: state
+          entity_id: light.1_di_lights
+          state: 'off'
+        then:
+        - service: light.turn_on
+          metadata: {}
+          data: {}
+          target:
+            entity_id: light.1_di_lights
+        else:
+        - service: light.turn_on
+          metadata: {}
+          data:
+            brightness_step_pct: -{{ light_dim_step|int }}
+          target:
+            entity_id: '{{ light_entity }}'
+      button_dim_down_hold:
+      - alias: set intensity to desired minim value
+        service: light.turn_on
+        metadata: {}
+        data:
+          brightness_pct: 5
+        target:
+          entity_id: '{{ light_entity }}'
+      debug: false
+- id: '1708459601028'
+  alias: 1.BS light-on-check
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.1_bs_motion_occupancy
+    to: 'off'
+    for:
+      hours: 0
+      minutes: 4
+      seconds: 0
+  condition:
+  - condition: state
+    entity_id: input_boolean.manual_override_enabled
+    state: 'off'
+  action:
+  - if:
+    - condition: numeric_state
+      entity_id: sensor.1_bs_motion_illuminance_lux
+      above: 20
+      below: 30
+    - condition: state
+      entity_id: switch.1_bs_main_light_switch
+      state: 'off'
+    - condition: sun
+      before: sunrise
+      after: sunset
+      before_offset: -02:00:00
+      after_offset: 02:00:00
+    - condition: not
+      conditions:
+      - condition: and
+        conditions:
+        - condition: state
+          entity_id: binary_sensor.1_bs_door_contact
+          state: 'on'
+        - condition: state
+          entity_id: light.1_he_lights
+          state: 'on'
+    then:
+    - service: script.notification
+      metadata: {}
+      data:
+        info: true
+        title: lights
+        message: you may have forgotten the mirror light on
+  mode: single
+- id: '1709921145502'
+  alias: 'maintenance: full-backup'
+  description: ''
+  trigger:
+  - platform: time
+    at: 01:00:00
+  condition: []
+  action:
+  - service: hassio.backup_full
+    data:
+      compressed: true
+      homeassistant_exclude_database: false
+      name: '{{now().strftime(''%Y-%m-%d'')}}'
+  - service: script.notification
+    metadata: {}
+    data:
+      message: full backup initiated
+  mode: single

@@ -1,0 +1,11 @@
+# system files
+.DS_Store
+
+# local config private files
+secrets.yaml
+deps
+mqtt
+themes
+tts
+www
+

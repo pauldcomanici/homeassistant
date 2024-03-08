@@ -1,0 +1,26 @@
+header_overview:
+  card:
+    type: custom:mushroom-chips-card
+    chips:
+      - type: back
+      - type: action
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace
+        icon: mdi:view-dashboard
+      - type: action
+        tap_action:
+          action: navigate
+          navigation_path: /house-rooms
+        icon: mdi:home-modern
+        icon_color: blue
+      - type: action
+        tap_action:
+          action: navigate
+          navigation_path: /dashboard-sensors
+        icon: mdi:home-automation
+        icon_color: purple
+      - type: spacer
+      - type: template
+        content: '[[name]]'
+        icon: '[[icon]]'

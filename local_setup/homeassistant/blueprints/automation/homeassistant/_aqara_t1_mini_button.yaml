@@ -1,0 +1,76 @@
+blueprint:
+  name: Z2M - Aqara T1 (WXKG11LM) - wireless mini button
+  description: Scene & device control using Aqara T1 mini button
+  author: pauldcomanici
+  domain: automation
+  input:
+    button_action_topic:
+      name: zigbee2mqtt topic with action for aqara button
+      description: "zigbee2mqtt topic with action for aqara button (example: zigbee2mqtt/0.LV1 button/action)"
+      selector:
+        text:
+    single_press:
+      name: single press
+      description: action to run on a single press
+      default: []
+      selector:
+        action: {}
+    double_press:
+      name: double press
+      description: action to run on a double press
+      default: []
+      selector:
+        action: {}
+    hold:
+      name: hold
+      description: action to run when button is held
+      default: []
+      selector:
+        action: {}
+    release:
+      name: release
+      description: action to run when button is released after a hold
+      default: []
+      selector:
+        action: {}
+
+mode: restart
+max_exceeded: silent
+
+trigger:
+  - platform: mqtt
+    topic: !input "button_action_topic"
+
+condition:
+  - condition: state
+    entity_id: input_boolean.manual_override_enabled
+    state: "off"
+  - condition: or
+    conditions:
+      - condition: numeric_state
+        entity_id: zone.home
+        above: 0
+      - condition: state
+        entity_id: input_boolean.home_guest_presence
+        state: "on"
+
+action:
+  - variables:
+      command: "{{ trigger.payload }}"
+  - choose:
+      - conditions:
+        - condition: template
+          value_template: "{{ command == 'single' }}"
+        sequence: !input "single_press"
+      - conditions:
+        - condition: template
+          value_template: "{{ command == 'double' }}"
+        sequence: !input "double_press"
+      - conditions:
+        - condition: template
+          value_template: "{{ command == 'hold' }}"
+        sequence: !input "hold"
+      - conditions:
+        - condition: template
+          value_template: "{{ command == 'release' }}"
+        sequence: !input "release"

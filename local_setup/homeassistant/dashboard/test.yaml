@@ -1,0 +1,118 @@
+decluttering_templates: !include decluttering_templates.yaml
+
+views:
+  - title: Home
+    cards:
+      - type: custom:decluttering-card
+        template: header_overview
+        variables:
+          - name: ssss
+          - icon: mdi:chandelier
+      - type: custom:room-card
+        title: 1.DM
+        entity: light.1_dm_led_lights
+        icon: mdi:lightbulb-outline
+        show_icon: true
+        tap_action:
+          action: navigate
+          navigation_path: /house-rooms/1dm
+        double_tap_action:
+          action: toggle
+        card_styles:
+          template: >
+            if (entity.state=='on') return 'background-color: rgba(255, 165, 0,
+            0.1)'
+        templates:
+          - name: humidity
+            template:
+              format: precision1
+              styles:
+                template: >
+                  if (entity.state >=
+                  states['input_number.humidity_bathroom_threshold'].state)
+                  return 'color: red'
+          - name: temperature
+            template:
+              format: precision1
+          - name: smoke
+            template:
+              show_icon: true
+              icon:
+                template:
+                  styles: |
+                    return 'color: brown'
+                  icon: |
+                    return 'mdi:smoke'
+              hide_if:
+                conditions:
+                  - condition: equals
+                    value: 'off'
+                  - condition: equals
+                    value: unknown
+          - name: caqi
+            template:
+              show_icon: true
+              icon:
+                template:
+                  styles: >
+                    if (entity.state < 25) return 'color: green'; if
+                    (entity.state < 50) return 'color: lime'; if (entity.state <
+                    75) return 'color: yellow'; if (entity.state < 100) return
+                    'color: orange'; return 'color: red';
+                  icon: |
+                    return 'mdi:air-filter'
+              hide_if:
+                conditions:
+                  - condition: below
+                    value: 25
+          - name: light_switch
+            template:
+              show_icon: true
+              icon:
+                template:
+                  styles: |
+                    if (entity.state=='on') return 'color: rgba(255, 165, 0)';
+                  icon: |
+                    return 'mdi:lightbulb'
+              tap_action:
+                action: toggle
+          - name: switch
+            template:
+              show_icon: true
+              icon:
+                template:
+                  styles: |
+                    if (entity.state=='on') return 'color: rgba(255, 165, 0)';
+                  icon: |
+                    if (entity.state=='on') return 'mdi:toggle-switch-variant'
+                    return 'mdi:toggle-switch-variant-off';
+              tap_action:
+                action: toggle
+        info_entities:
+          - entity: sensor.1_dm_air_conditioning_air_quality
+            template: caqi
+          - entity: binary_sensor.1_dm_smoke_smoke
+            template: smoke
+          - entity: sensor.1_dm_air_conditioning_relative_humidity_measurement
+            template: humidity
+          - entity: sensor.1_dm_air_conditioning_temperature_measurement
+            template: temperature
+        entities:
+          - entity: light.1_dm_led_strip
+            name: strip
+            show_icon: true
+            icon: mdi:led-strip-variant
+            tap_action:
+              action: toggle
+          - entity: light.1dm_aqara_hub_lightbulb
+            name: led
+            show_icon: true
+            icon: mdi:led-strip
+            tap_action:
+              action: toggle
+          - entity: switch.1_dm_light_switch_switch
+            name: main
+            template: light_switch
+          - entity: switch.1_dm_aeotec_cam_360
+            name: cam360
+            template: switch

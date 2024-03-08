@@ -1,0 +1,236 @@
+blueprint:
+  name: motion-light trigger
+  description: turn on a light when motion is detected.
+  domain: automation
+  author: pauldcomanici
+  input:
+    blocking_condition_turn_on:
+      name: blocking condition for turning on
+      description: condition for the turn-on part that will stop execution
+      default:
+      selector:
+        condition: {}
+    door_entity:
+      name: (optional) door entity
+      description: "the entry/exit door for the room; used for the condition when it is closed and clear motion turn off the light"
+      default:
+      selector:
+        entity:
+          domain:
+            - binary_sensor
+    last_motion_entity:
+      name: (optional) entity for last motion
+      description: entity that has the value for last time when motion was registered
+      default:
+      selector:
+        entity:
+          domain: sensor
+    lux_entity:
+      name: illuminance sensor
+      selector:
+        entity:
+          domain: sensor
+          device_class: illuminance
+    lux_level:
+      name: illuminance level
+      description: if lux is below this value and motion is detected, the light will turn on.
+      default: 50
+      selector:
+        number:
+          min: 0
+          max: 1000
+    motion_entity:
+      name: motion sensor
+      selector:
+        entity:
+          domain: binary_sensor
+          device_class:
+            - motion
+            - occupancy
+#        multiple: true
+    no_motion_wait:
+      name: wait time
+      description: time to leave the light on after last motion is detected.
+      default: 120
+      selector:
+        number:
+          min: 0
+          max: 3600
+          unit_of_measurement: seconds
+    target_entity:
+      name: target entity
+      description: the light, switch, scene, script to activate when the automation is triggered.
+      selector:
+        entity:
+          domain:
+            - light
+            - switch
+            - scene
+            - script
+    target_entity_off:
+      name: (optional) target entity for off
+      description: the light, switch, scene, script to trigger off
+      default:
+      selector:
+        entity:
+          domain:
+            - light
+            - switch
+            - scene
+            - script
+    turn_light_off_when_door_closes:
+      name: turn light off when door closes
+      description: when the door closes turn light off
+      default: false
+      selector:
+        boolean:
+    debug:
+      name: debug flag
+      description: debug flag, allows us to check the flow
+      default: false
+      selector:
+        boolean:
+
+# If motion is detected within the delay,
+# we restart the script.
+mode: restart
+max_exceeded: silent
+
+# variables
+variables:
+  door_entity: !input door_entity
+  last_motion_entity: !input last_motion_entity
+  target_entity: !input target_entity
+  target_entity_off: !input target_entity_off
+  turn_light_off_when_door_closes: !input turn_light_off_when_door_closes
+  debug: !input debug
+  is_door_closed: >-
+    {% if door_entity is not none %}
+      {{ iif(is_state(door_entity, 'off'), true, false) }}
+    {% else %}
+      false
+    {% endif %}
+  keep_light_on: >-
+    {% if (is_door_closed and door_entity is not none and last_motion_entity is not none) %}
+      {% set last_motion = states(last_motion_entity)|float %}
+      {% set minim_time = (now()|as_timestamp)-(5*60) %}
+      {{ states[door_entity].last_changed|as_timestamp < last_motion and minim_time < last_motion }}
+    {% else %}
+      false
+    {% endif %}
+  use_target_entity_off: >-
+    {{ iif(target_entity_off is not none, true, false) }}
+  use_target_entity_off_as_light: >-
+    {% if target_entity_off is not none %}
+      {% set entity_type = target_entity_off.split('.')[0] %}
+      {{ iif(entity_type=='light', true, false) }}
+    {% else %}
+      false
+    {% endif %}
+
+trigger:
+  - platform: state
+    entity_id: !input motion_entity
+    id: motion_changed
+  - platform: state
+    entity_id: !input motion_entity
+    id: motion_clear_delay
+    to: "off"
+    for:
+      seconds: !input no_motion_wait
+  - platform: state
+    entity_id: !input motion_entity
+    id: motion_clear_backup
+    to: "off"
+    for:
+      minutes: 6
+
+condition:
+  - condition: state
+    entity_id: input_boolean.manual_override_enabled
+    state: "off"
+  - condition: or
+    conditions:
+      - condition: numeric_state
+        entity_id: zone.home
+        above: 0
+      - condition: state
+        entity_id: input_boolean.home_guest_presence
+        state: "on"
+
+action:
+  - if:
+      - condition: template
+        value_template: "{{ debug==true }}"
+    then:
+      - service: notify.persistent_notification
+        metadata: {}
+        data:
+          message: >-
+            is_door_closed -> {{ is_door_closed }}"
+            keep_light_on -> {{ keep_light_on }}"
+            use_target_entity_off -> {{ use_target_entity_off }}"
+            use_target_entity_off_as_light -> {{ use_target_entity_off_as_light }}"
+
+  - choose:
+    - conditions:
+      - condition: not
+        conditions: !input blocking_condition_turn_on
+      - condition: state
+        entity_id: !input motion_entity
+        state: "on"
+      - condition: or
+        conditions:
+          - condition: numeric_state
+            entity_id: !input lux_entity
+            below: !input lux_level
+          - condition: sun
+            before: sunrise
+            after: sunset
+      sequence:
+        - service: homeassistant.turn_on
+          target:
+            entity_id: !input target_entity
+          data: {}
+    - conditions:
+      - condition: or
+        conditions:
+          - condition: and
+            conditions:
+              - condition: state
+                entity_id: !input motion_entity
+                state: "off"
+              - condition: template
+                value_template: '{{ is_door_closed|bool==true }}'
+              - condition: template
+                value_template: '{{ keep_light_on|bool==false }}'
+              - condition: template
+                value_template: '{{ turn_light_off_when_door_closes==true }}'
+          - condition: and
+            conditions:
+              - condition: trigger
+                id:
+                  - motion_clear_delay
+                  - motion_clear_backup
+              - condition: template
+                value_template: '{{ keep_light_on|bool==false }}'
+      sequence:
+        - choose:
+          - conditions:
+              - condition: template
+                value_template: '{{ use_target_entity_off_as_light|bool==true }}'
+            sequence:
+              - service: light.turn_off
+                target:
+                  entity_id: !input target_entity_off
+          - conditions:
+              - condition: template
+                value_template: '{{ use_target_entity_off|bool==true }}'
+            sequence:
+              - service: homeassistant.turn_off
+                target:
+                  entity_id: !input target_entity_off
+          default:
+            - service: homeassistant.turn_off
+              target:
+                entity_id: !input target_entity

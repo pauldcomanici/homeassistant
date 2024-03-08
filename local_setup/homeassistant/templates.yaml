@@ -1,0 +1,231 @@
+- sensor:
+    ##### contact-sensors: all ##################################
+    - name: "contact-sensor: all"
+      unique_id: "sensor.contact_sensor_all"
+      icon: mdi:door-open
+      state: >
+        {%- set ns = namespace(contactsensors=[]) -%}
+        {%- set ns.contactsensors = states.binary_sensor 
+                  | selectattr('attributes.device_class', 'defined')
+                  | rejectattr('entity_id', 'in', 'binary_sensor.contact_sensors_indoor')
+                  | rejectattr('entity_id', 'in', 'binary_sensor.contact_sensors_outdoor')
+                  | selectattr('attributes.device_class', '==', 'opening')
+                  | map(attribute='name') | list -%}
+        {%- if (ns.contactsensors | count > 0) -%}
+          {{ ns.contactsensors | list | join('\n')}}
+        {%- else -%}
+          none
+        {%- endif %}
+
+    ##### Count Open Doors ##################################
+    ## sensor.count_open_doors
+    - name: "security: outside open doors - count"
+      unique_id: a50f776c-4d99-495e-89f4-29a252844e00
+      icon: mdi:door-open
+      state: >
+        {%- set ns = namespace(contactsensors=[]) -%}
+        {%- set ns.contactsensors = states.binary_sensor 
+                  | selectattr('entity_id', 'in', state_attr('binary_sensor.contact_sensors_outdoor', 'entity_id'))
+                  | selectattr('state', 'eq', 'on') 
+                  | map(attribute='name') | list -%}
+        {{ ns.contactsensors | count }}
+
+    ##### Info Open Doors ##################################
+    ## sensor.info_open_doors
+    - name: "security: outside open doors - info"
+      unique_id: a50f776c-4d99-495e-89f4-29a252844e01
+      icon: mdi:door-open
+      state: >
+        {%- set ns = namespace(contactsensors=[]) -%}
+        {%- set ns.contactsensors = states.binary_sensor 
+                  | selectattr('entity_id', 'in', state_attr('binary_sensor.contact_sensors_outdoor', 'entity_id'))
+                  | selectattr('state', 'eq', 'on') 
+                  | map(attribute='name') | list -%}
+        {%- if (ns.contactsensors | count > 0) -%}
+          {{ ns.contactsensors | list | join(', ')}}
+        {%- else -%}
+          none
+        {%- endif %}
+
+    ##### inside open doors - count  ##################################
+    ## sensor.security_count_inside_open_contacts
+    - name: "security: inside open doors - count"
+      unique_id: a50f776c-4d99-495e-89f4-29a252844e02
+      icon: mdi:door-open
+      state: >
+        {%- set ns = namespace(contactsensors=[]) -%}
+        {%- set ns.contactsensors = states.binary_sensor 
+                  | selectattr('entity_id', 'in', state_attr('binary_sensor.contact_sensors_indoor', 'entity_id'))
+                  | selectattr('state', 'eq', 'on') 
+                  | map(attribute='name') | list -%}
+        {{ ns.contactsensors | count }}
+
+    ##### inside open doors - info ##################################
+    ## sensor.security_info_inside_open_doors
+    - name: "security: inside open doors - info"
+      unique_id: a50f776c-4d99-495e-89f4-29a252844e03
+      icon: mdi:door-open
+      state: >
+        {%- set ns = namespace(contactsensors=[]) -%}
+        {%- set ns.contactsensors = states.binary_sensor 
+                  | selectattr('entity_id', 'in', state_attr('binary_sensor.contact_sensors_indoor', 'entity_id'))
+                  | selectattr('state', 'eq', 'on') 
+                  | map(attribute='name') | list -%}
+        {{ ns.contactsensors | list | join(', ') }}
+
+    ##### roller-shade open - count  ##################################
+    ## sensor.security_roller_shade_open_count
+    - name: "security: roller-shade open - count"
+      unique_id: a50f776c-4d99-495e-89f4-29a252844e04
+      icon: mdi:door-open
+      state: >
+        {%- set ns = namespace(contactsensors=[]) -%}
+        {%- set ns.contactsensors = states.binary_sensor 
+                  | selectattr('entity_id', 'in', state_attr('binary_sensor.contact_sensors_roller_shade', 'entity_id'))
+                  | selectattr('state', 'eq', 'on') 
+                  | map(attribute='name') | list -%}
+        {{ ns.contactsensors | count }}
+
+    ##### roller-shade open - info ##################################
+    ## sensor.security_roller_shade_open_info
+    - name: "security: roller-shade open - info"
+      unique_id: a50f776c-4d99-495e-89f4-29a252844e05
+      icon: mdi:door-open
+      state: >
+        {%- set ns = namespace(contactsensors=[]) -%}
+        {%- set ns.contactsensors = states.binary_sensor 
+                  | selectattr('entity_id', 'in', state_attr('binary_sensor.contact_sensors_roller_shade', 'entity_id'))
+                  | selectattr('state', 'eq', 'on') 
+                  | map(attribute='name') | list -%}
+        {{ ns.contactsensors | list | join(', ') }}
+
+    ### Count how many outside open doors we have from the moment when the system was armed ###
+    ## sensor.alarm_new_door_opened
+    - name: "security: outside open doors - count diff"
+      unique_id: a50f776c-4d99-495e-89f4-29a252844e20
+      icon: mdi:door-open
+      state: >
+        {{ states('sensor.count_open_doors')|int
+            - states('input_number.security_outside_open_doors_count')|int }}
+
+    ### Count how many inside open doors we have from the moment when the system was armed ###
+    ## sensor.security_count_new_inside_door_opened
+    - name: "security: inside open doors - count diff"
+      unique_id: a50f776c-4d99-495e-89f4-29a252844e21
+      icon: mdi:door-open
+      state: >
+        {{ states('sensor.security_count_inside_open_contacts')|int
+            - states('input_number.security_inside_open_doors_count')|int }}
+
+    ### Count how many roller-shade open contacts we have from the moment when the system was armed ###
+    ## sensor.security_roller_shade_open_count_diff
+    - name: "security: roller-shade open - count diff"
+      unique_id: a50f776c-4d99-495e-89f4-29a252844e22
+      icon: phu:blind-tilt-open
+      state: >
+        {{ states('sensor.security_roller_shade_open_count')|int
+            - states('input_number.security_roller_shade_open_count')|int }}
+
+    ### The time when to send notification that the system will be automatically armed-night ###
+    - name: "security: auto-arm-night notification time"
+      unique_id: a50f776c-4d99-495e-89f4-29a252844e30
+      icon: mdi:timer-lock-outline
+      state: >
+        {{
+          (
+            today_at(states('input_datetime.security_auto_arm_night_time'))
+            - timedelta(minutes = states('input_number.security_auto_arm_night_notification_delta_minutes')|int)
+          ).strftime('%H:%M:%S')
+        }}
+    ### The time when to send notification that the system will be automatically disarm from arm-night ###
+    - name: "security: auto-disarm-night notification time"
+      unique_id: a50f776c-4d99-495e-89f4-29a252844e31
+      icon: mdi:timer-lock-open-outline
+      state: >
+        {{
+          (
+            today_at(states('input_datetime.security_auto_disarm_night_time'))
+            - timedelta(minutes = states('input_number.security_auto_disarm_night_notification_delta_minutes')|int)
+          ).strftime('%H:%M:%S')
+        }}
+
+    ### Temperature difference between room-temp and desired temp ###
+    - name: "1.DM climate temp-diff"
+      unique_id: a50f776c-4d99-495e-89f4-29a252844e10
+      icon: mdi:temperature-celsius
+      state: >
+        {{ (states('sensor.1_dm_air_conditioning_temperature_measurement')|float
+            - states('input_number.1_dm_climate_temperature')|float) | round(2) }}
+
+    ### minimum temperature for the next 24h ###
+    - name: "temperature: minimum for next 24h"
+      unit_of_measurement: "°C"
+      icon: mdi:thermometer-low
+      state: >
+        {{
+          state_attr('weather.add_on_forecast_home_tm_hourly', 'forecast') | map(attribute='temperature') | list | min
+        }}
+
+    ### maximum temperature for the next 24h ###
+    - name: "temperature: maximum for next 24h"
+      unit_of_measurement: "°C"
+      icon: mdi:thermometer-high
+      state: >
+        {{
+          state_attr('weather.add_on_forecast_home_tm_hourly', 'forecast') | map(attribute='temperature') | list | max
+        }}
+
+    ##### sensors in states that need attention ##################################
+    - name: "unavailable"
+      unique_id: "sensor.unavailable"
+      icon: mdi:help-rhombus
+      state: >
+        {%- set ns = namespace(sensors=[]) -%}
+        {%- set ns.sensors = states 
+                  | selectattr('state', 'eq', 'unavailable')
+                  | rejectattr('entity_id', 'in', state_attr('group.ignore_unavailable_entities', 'entity_id'))
+                  | rejectattr('entity_id', 'eq', 'group.ignore_unavailable_entities')
+                  | map(attribute='name') | list -%}
+        {%- if (ns.sensors | count > 0) -%}
+          {%- set value = ns.sensors | list | join(', ') -%}
+          {%- if value|length > 255 -%}
+            too-many-entities
+          {%- else -%}
+            {{ value }}
+          {%- endif %}
+        {%- else -%}
+          none
+        {%- endif %}
+
+### last motion timestamp 1.BS
+- trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.1_bs_motion_occupancy
+      to:
+        - "on"
+        - "off"
+  sensor:    
+    - name: "1.BS last-motion"
+      unique_id: 'sensor.1_bs_last_motion'
+      icon: mdi:motion-sensor
+      state: >
+        {% from 'last_motion_time.jinja' import last_motion %}
+        {{ last_motion('binary_sensor.1_bs_motion_occupancy', 'sensor.1_bs_last_motion', 'number.1_bs_motion_detection_interval') }}
+
+### last motion timestamp 0.BJ
+- trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.0_bj_motion_occupancy
+      to:
+        - "on"
+        - "off"
+  sensor:    
+    - name: "0.BJ last-motion"
+      unique_id: 'sensor.0_bj_last_motion'
+      icon: mdi:motion-sensor
+      state: >
+        {% from 'last_motion_time.jinja' import last_motion %}
+        {{ last_motion('binary_sensor.0_bj_motion_occupancy', 'sensor.0_bj_last_motion', 'number.0_bj_motion_detection_interval') }}
+      

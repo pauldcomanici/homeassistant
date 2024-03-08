@@ -1,0 +1,32 @@
+- platform: group
+  name: "switch: ground-floor lights"
+  unique_id: "switch.switch_ground_floor_lights"
+  entities:
+    - switch.0_br_light_switch
+    - switch.0_bj_main_light_switch
+    - switch.0_ct_light_switch
+    - switch.0_bp_light_switch
+    - switch.0_bc_light_switch
+- platform: group
+  name: "switch: first-floor lights"
+  unique_id: "switch.switch_first_floor_lights"
+  entities:
+    - switch.1_dm_light_switch_switch
+    - switch.1_bs_main_light_switch
+    - switch.1_drm_main_switch
+- platform: group
+  name: "switch: all-lights"
+  unique_id: "switch.switch_all_lights"
+  entities:
+    - switch.switch_ground_floor_lights
+    - switch.switch_first_floor_lights
+# 1.DM group power-left
+- platform: group
+  name: "1.DM power-left outlet"
+  unique_id: "1_dm_power_left_outlet"
+  entities:
+    - switch.1_dm_power_left_outlet_1
+    - switch.1_dm_power_left_outlet_2
+    - switch.1_dm_power_left_outlet_3
+    - switch.1_dm_power_left_outlet_4
+    - switch.1_dm_power_left_usb

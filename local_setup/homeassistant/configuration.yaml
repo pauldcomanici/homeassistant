@@ -1,0 +1,157 @@
+
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# Load frontend themes from the themes folder
+frontend:
+  themes: !include_dir_merge_named themes
+
+automation: !include automations.yaml
+binary_sensor: !include binary_sensors.yaml
+group: !include groups.yaml
+input_boolean: !include input_boolean.yaml
+input_datetime: !include input_datetime.yaml
+input_number: !include input_number.yaml
+input_select: !include input_select.yaml
+input_text: !include input_texts.yaml
+light: !include lights.yaml
+scene: !include scenes.yaml
+schedule: !include schedules.yaml
+script: !include scripts.yaml
+sensor: !include sensors.yaml
+switch: !include switches.yaml
+template: !include templates.yaml
+timer: !include timers.yaml
+zone: !include zones.yaml
+
+bluetooth:
+
+zeroconf:
+
+ffmpeg:
+
+python_script:
+
+lovelace:
+  mode: storage
+  # Add yaml dashboards
+  dashboards:
+#    dashboard-overview:
+#      mode: yaml
+#      title: overview
+#      icon: mdi:view-dashboard
+#      show_in_sidebar: true
+#      filename: dashboard/overview.yaml
+#    dashboard-sensors:
+#      mode: yaml
+#      title: dashboard-sensors
+#      icon: mdi:home-automation
+#      show_in_sidebar: true
+#      filename: dashboard/sensors.yaml
+    dashboard-test:
+      mode: yaml
+      title: test
+      icon: mdi:view-dashboard
+      show_in_sidebar: false
+      filename: dashboard/test.yaml
+#    house-rooms:
+#      mode: yaml
+#      title: house-rooms
+#      icon: mdi:home-modern
+#      show_in_sidebar: true
+#      filename: dashboard/house-rooms.yaml
+
+### Alarm Control Panel ###
+alarm_control_panel:
+  - platform: manual
+    name: Home Alarm
+    code_arm_required: false
+    arming_time: 5 # The time of the 'arming' state before effecting a state change.
+    delay_time: 5 # The time of the 'pending' state before triggering the alarm
+    trigger_time: 120 # The time of the 'triggered' state in which the alarm is active.
+    disarm_after_trigger: false
+    disarmed:
+      trigger_time: 0
+    armed_home:
+      arming_time: 0
+      delay_time: 0
+    armed_night:
+      arming_time: 0
+      delay_time: 0
+
+notify:
+  - platform: group
+    name: mobile_phones
+    services:
+      - service: mobile_app_silvanas_iphone
+      - service: mobile_app_pauls_iphone
+
+homekit:
+  - name: HASS-Bridge-HomeKit
+    port: 21065
+  - filter:
+      include_domains:
+        - alarm_control_panel
+    entity_config:
+      alarm_control_panel.home_alarm:
+        code: !secret alarm_code
+
+# ShellforHASS
+shelly:
+  version: true
+  sensors:
+    - all
+  discover_by_ip:
+    - 192.168.0.62
+    - 192.168.0.161
+
+#mqtt: !include_dir_merge_named ./mqtt
+mqtt:
+  binary_sensor:
+    - name: "0.BC smoke alarm"
+      unique_id: "0bc_smoke_alarm"
+      icon: mdi:smoke
+      state_topic: "shellies/shellyplussmoke-80646fd0b02c/status/smoke:0"
+      value_template: "{{value_json.alarm}}"
+      payload_on: "True"
+      payload_off: "False"
+      qos: 0
+      device_class: smoke
+    - name: "2.PD smoke alarm"
+      unique_id: "2pd_smoke_alarm"
+      icon: mdi:smoke
+      state_topic: "shellies/shellyplussmoke-64b7080bf360/status/smoke:0"
+      value_template: "{{value_json.alarm}}"
+      payload_on: "True"
+      payload_off: "False"
+      qos: 0
+      device_class: smoke
+  sensor:
+    - name: "0.BC smoke battery"
+      unique_id: "0_bc_smoke_battery"
+      icon: mdi:battery
+      state_topic: "shellies/shellyplussmoke-80646fd0b02c/status/devicepower:0"
+      value_template: "{{value_json['battery']['percent']}}"
+      qos: 0
+      device_class: battery
+    - name: "2.PD smoke battery"
+      unique_id: "2_pd_smoke_battery"
+      icon: mdi:battery
+      state_topic: "shellies/shellyplussmoke-64b7080bf360/status/devicepower:0"
+      value_template: "{{value_json['battery']['percent']}}"
+      qos: 0
+      device_class: battery
+
+  camera:
+    name: "0.FT reolink"
+    unique_id: "0_ft_reolink"
+    topic: "homeassistant/camera/neolink_0FT reolink_camera/0FT reolink/config"
+
+media_player:
+  - platform: group
+    name: "media_player: all"
+    entities:
+      - media_player.0lv2_sonos300
+      - media_player.1_dm_apple_tv
+
+

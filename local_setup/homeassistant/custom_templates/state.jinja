@@ -1,0 +1,14 @@
+{% macro temperature(entity_id) %}
+{% set value = states(entity_id)|round(1) %}
+{{ value }}°C
+{% endmacro %}
+
+{% macro humidity(entity_id) %}
+{% set value = states(entity_id)|round(1) %}
+{{ value }}%
+{% endmacro %}
+
+{% macro temperature_with_offset(entity_id, offset) %}
+{% set value = states(entity_id)|round(1) %}
+{{ value+offset }}°C
+{% endmacro %}

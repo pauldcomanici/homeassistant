@@ -1,0 +1,32 @@
+{% macro person_presence(entity_id) %}
+{% set value = states(entity_id) %}
+{% if value=="not_home" %}
+  away
+{% else %}
+  {{ value }}
+{% endif %}
+{% endmacro %}
+
+{% macro sound_state(entity_id) %}
+{% if states(entity_id)=="on" %}
+  sound
+{% else %}
+  clear
+{% endif %}
+{% endmacro %}
+
+{% macro smoke_state(entity_id) %}
+{% if states(entity_id)=="on" %}
+  smoke
+{% else %}
+  clear
+{% endif %}
+{% endmacro %}
+
+{% macro water_leak(entity_id) %}
+{% if states(entity_id)=="on" %}
+  moisture
+{% else %}
+  dry
+{% endif %}
+{% endmacro %}

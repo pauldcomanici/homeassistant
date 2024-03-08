@@ -1,0 +1,49 @@
+{% macro door_state(entity_id, isWindow=false) %}
+{% if isWindow==true %}
+  {% if states(entity_id)=="on" %}
+    mdi:window-open
+  {% else %}
+    mdi:window-closed
+  {% endif %}
+{% else %}
+  {% if states(entity_id)=="on" %}
+    mdi:door-open
+  {% else %}
+    mdi:door-closed
+  {% endif %}
+{% endif %}
+{% endmacro %}
+
+{% macro door_open_count(entity_id) %}
+{% if states(entity_id)|int>0 %}
+  mdi:door-open
+{% else %}
+  mdi:door-closed
+{% endif %}
+{% endmacro %}
+
+{% macro bed_occupied(entity_id) %}
+{% if states(entity_id)=="on" %}
+  mdi:bed
+{% else %}
+  mdi:bed-empty
+{% endif %}
+{% endmacro %}
+
+{% macro roller_shade_state(entity_id) %}
+{% if states(entity_id)=="on" %}
+  phu:blind-tilt-open
+{% else %}
+  phu:blind-tilt-closed
+{% endif %}
+{% endmacro %}
+
+{% macro roller_shade_count(entity_id) %}
+{% if states(entity_id)|int>0 %}
+  phu:blind-tilt-open
+{% else %}
+  phu:blind-tilt-closed
+{% endif %}
+{% endmacro %}
+
+

@@ -1,0 +1,85 @@
+blueprint:
+  name: _ high humidity
+  description: get notifications when high humidity is determined
+  domain: automation
+  author: pauldcomanici
+  input:
+    actions:
+      name: actions
+      description: the actions that you want to take when the humidity is above threshold
+      selector:
+        action: {}
+    alert_timer:
+      name: timer entity
+      description: timer entity to use for alerts
+      selector:
+        entity:
+          domain: timer
+    humidity_entity:
+      name: humidity entity
+      description: humidity entity that gives measurement
+      selector:
+        entity:
+          device_class: humidity
+    humidity_threshold:
+      name: humidity threshold
+      description: humidity threshold that is used as value for triggering notifications
+      selector:
+        entity:
+          domain: input_number
+    window_entity:
+      name: window entity
+      description: window entity that is checked if is open/closed and if you open it the humidity will be reduced
+      selector:
+        entity:
+          device_class:
+            - window
+            - door
+
+
+trigger:
+  - platform: state
+    entity_id: !input humidity_entity
+  - platform: state
+    entity_id: !input window_entity
+  - platform: state
+    entity_id: !input alert_timer
+    to: idle
+
+condition:
+  - condition: state
+    entity_id: input_boolean.manual_override_enabled
+    state: "off"
+
+action:
+  - if:
+      - condition: state
+        entity_id: !input window_entity
+        state: "off"
+      - condition: numeric_state
+        entity_id: !input humidity_entity
+        above: !input humidity_threshold
+    then:
+      - if:
+          - condition: state
+            entity_id: !input alert_timer
+            state: idle
+        then:
+          - alias: execute defined actions
+            choose: []
+            default: !input actions
+          - service: timer.start
+            target:
+              entity_id:
+                - !input alert_timer
+              device_id: []
+              area_id: []
+            data: {}
+    else:
+      - service: timer.finish
+        target:
+          entity_id: !input alert_timer
+        data: {}
+
+mode: single
+max_exceeded: silent

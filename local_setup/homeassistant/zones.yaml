@@ -1,0 +1,6 @@
+# This will override the default home zone
+- name: Home
+  latitude: 45.801571
+  longitude: 21.220204
+  radius: 75
+  icon: mdi:account-multiple

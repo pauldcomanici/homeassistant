@@ -1,0 +1,55 @@
+humidity_bathroom_threshold:
+  name: "humidity: bathroom threshold"
+  initial: 70
+  min: 60
+  max: 100
+  step: 1
+
+security_auto_arm_night_notification_delta_minutes:
+  name: "security: auto-arm notification before time (minutes)"
+  initial: 10
+  min: 5
+  max: 30
+  step: 1
+security_auto_disarm_night_notification_delta_minutes:
+  name: "security: auto-disarm notification before time (minutes)"
+  initial: 10
+  min: 5
+  max: 30
+  step: 1
+
+security_inside_open_doors_count:
+  name: "security: inside open doors count"
+  initial: 0
+  min: 0
+  max: 30
+  step: 1
+security_outside_open_doors_count:
+  name: "security: outside open doors count"
+  initial: 0
+  min: 0
+  max: 30
+  step: 1
+security_roller_shade_open_count:
+  name: "security: roller-shade open count"
+  initial: 0
+  min: 0
+  max: 30
+  step: 1
+
+0_bp_inside_temperature_threshold:
+  name: "0.BP inside temperature threshold"
+  icon: mdi:temperature-celsius
+  initial: 3
+  min: 0
+  max: 20
+  step: 0.5
+  unit_of_measurement: Celsius
+0_bp_outside_temperature_threshold:
+  name: "0.BP outside temperature threshold"
+  icon: mdi:temperature-celsius
+  initial: 0
+  min: -10
+  max: 10
+  step: 0.5
+  unit_of_measurement: Celsius

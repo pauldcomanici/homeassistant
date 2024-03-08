@@ -1,0 +1,48 @@
+alert_alarm_enabled:
+  name: "alert-alarm: enabled"
+  icon: mdi:alarm-check
+away_random_lighting_enabled:
+  name: "away: random lighting enabled"
+  icon: mdi:lightbulb-question-outline
+dehumidify_action_enabled:
+  name: "dehumidifier: enabled"
+  icon: mdi:air-humidifier
+  initial: true
+climate_1_dm_enabled:
+  name: "climate: 1.DM enabled"
+  icon: mdi:home-thermometer-outline
+home_dog_presence:
+  name: "home: dog presence"
+  icon: mdi:dog
+home_guest_presence:
+  name: "home: guest presence"
+  icon: mdi:home-plus-outline
+manual_override_enabled:
+  name: "automation: manual override enabled"
+  icon: mdi:robot-outline
+mow_action_enabled:
+  name: "mow: enabled"
+  icon: mdi:toggle-switch-off-outline
+reminder_silvana_enabled:
+  name: "reminder: silvana enabled"
+  icon: mdi:calendar-clock
+  initial: true
+reminder_paul_enabled:
+  name: "reminder: paul enabled"
+  icon: mdi:calendar-clock
+  initial: true
+roll_action_enabled:
+  name: "roll: enabled"
+  icon: mdi:toggle-switch-off-outline
+security_auto_arm_night_enabled:
+  name: "security: auto-arm-night enabled"
+  icon: mdi:shield-lock
+  initial: true
+security_auto_disarm_night_enabled:
+  name: "security: auto-disarm-night enabled"
+  icon: mdi:shield-lock-open
+  initial: true
+smoke_alert_enabled:
+  name: "smoke: alert enabled"
+  icon: mdi:smoke
+  initial: true

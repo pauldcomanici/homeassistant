@@ -1,0 +1,157 @@
+blueprint:
+  name: Z2M - MOES ZigBee (ZT-SY-EU-MS-CG19) - Wireless remote switch(four rocker)
+  description: Scene & device control using MOES four button remote
+  author: pauldcomanici
+  domain: automation
+  input:
+    button_action_topic:
+      name: zigbee2mqtt topic with action for MOES button
+      description: "zigbee2mqtt topic for MOES button (example: zigbee2mqtt/0.LV1 button/action)"
+      selector:
+        text:
+    single_top_left:
+      name: top-left button - single press
+      description: action to run on a single press of the left button
+      default: []
+      selector:
+        action: {}
+    double_top_left:
+      name: top-left button - double press
+      description: action to run on a double press of the left button
+      default: []
+      selector:
+        action: {}
+    hold_top_left:
+      name: top-left button - hold
+      description: action to run when left button is held
+      default: []
+      selector:
+        action: {}
+    single_top_right:
+      name: top-right button - single press
+      description: action to run on a single press of the right button
+      default: []
+      selector:
+        action: {}
+    double_top_right:
+      name: top-right button - double press
+      description: action to run on a double press of the right button
+      default: []
+      selector:
+        action: {}
+    hold_top_right:
+      name: top-right button - hold
+      description: action to run when right button is held
+      default: []
+      selector:
+        action: {}
+    single_bottom_left:
+      name: bottom-left button - single press
+      description: action to run on a single press of the left button
+      default: []
+      selector:
+        action: {}
+    double_bottom_left:
+      name: bottom-left button - double press
+      description: action to run on a double press of the left button
+      default: []
+      selector:
+        action: {}
+    hold_bottom_left:
+      name: bottom-left button - hold
+      description: action to run when left button is held
+      default: []
+      selector:
+        action: {}
+    single_bottom_right:
+      name: bottom-right button - single press
+      description: action to run on a single press of the right button
+      default: []
+      selector:
+        action: {}
+    double_bottom_right:
+      name: bottom-right button - double press
+      description: action to run on a double press of the right button
+      default: []
+      selector:
+        action: {}
+    hold_bottom_right:
+      name: bottom-right button - hold
+      description: action to run when right button is held
+      default: []
+      selector:
+        action: {}
+
+mode: restart
+max_exceeded: silent
+
+trigger:
+  - platform: mqtt
+    topic: !input "button_action_topic"
+
+condition:
+  - condition: state
+    entity_id: input_boolean.manual_override_enabled
+    state: "off"
+  - condition: or
+    conditions:
+      - condition: numeric_state
+        entity_id: zone.home
+        above: 0
+      - condition: state
+        entity_id: input_boolean.home_guest_presence
+        state: "on"
+
+
+action:
+  - variables:
+      command: "{{ trigger.payload }}"
+  - choose:
+      - conditions:
+        - condition: template
+          value_template: "{{ command == '1_single' }}"
+        sequence: !input "single_top_left"
+      - conditions:
+        - condition: template
+          value_template: "{{ command == '1_double' }}"
+        sequence: !input "double_top_left"
+      - conditions:
+        - condition: template
+          value_template: "{{ command == '1_hold' }}"
+        sequence: !input "hold_top_left"
+      - conditions:
+        - condition: template
+          value_template: "{{ command == '2_single' }}"
+        sequence: !input "single_top_right"
+      - conditions:
+        - condition: template
+          value_template: "{{ command == '2_double' }}"
+        sequence: !input "double_top_right"
+      - conditions:
+        - condition: template
+          value_template: "{{ command == '2_hold' }}"
+        sequence: !input "hold_top_right"
+      - conditions:
+        - condition: template
+          value_template: "{{ command == '3_single' }}"
+        sequence: !input "single_bottom_left"
+      - conditions:
+        - condition: template
+          value_template: "{{ command == '3_double' }}"
+        sequence: !input "double_bottom_left"
+      - conditions:
+        - condition: template
+          value_template: "{{ command == '3_hold' }}"
+        sequence: !input "hold_bottom_left"
+      - conditions:
+        - condition: template
+          value_template: "{{ command == '4_single' }}"
+        sequence: !input "single_bottom_right"
+      - conditions:
+        - condition: template
+          value_template: "{{ command == '4_double' }}"
+        sequence: !input "double_bottom_right"
+      - conditions:
+        - condition: template
+          value_template: "{{ command == '4_hold' }}"
+        sequence: !input "hold_bottom_right"

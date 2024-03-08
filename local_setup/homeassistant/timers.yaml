@@ -1,0 +1,12 @@
+0_bj_humidity_alert_timer:
+  name: "0.BJ humidity alert timer"
+  duration: "00:05:00"
+  restore: true
+1_bs_humidity_alert_timer:
+  name: "1.BS humidity alert timer"
+  duration: "00:05:00"
+  restore: true
+smoke_alert_reenable_timer:
+  name: "smoke: alert reenable timer"
+  duration: "00:30:00"
+  restore: true

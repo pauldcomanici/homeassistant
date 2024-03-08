@@ -1,0 +1,285 @@
+- id: '1699539914731'
+  name: 'lights: all-off'
+  entities:
+    switch.switch_all_lights:
+      entity_id:
+      - switch.0_br_light_switch
+      - switch.0_bj_main_light_switch
+      - switch.0_ct_light_switch
+      - switch.0_bp_light_switch
+      - switch.0_bc_light_switch
+      - switch.1_dm_light_switch_switch
+      - switch.1_bs_main_light_switch
+      friendly_name: 'switch: all-lights'
+      state: 'off'
+    light.light_all_lightbulbs:
+      min_color_temp_kelvin: 1801
+      max_color_temp_kelvin: 6535
+      min_mireds: 153
+      max_mireds: 555
+      effect_list:
+      - blink
+      - breathe
+      - candle
+      - channel_change
+      - colorloop
+      - finish_effect
+      - fireplace
+      - okay
+      - stop_effect
+      - stop_hue_effect
+      supported_color_modes:
+      - brightness
+      - color_temp
+      - hs
+      - xy
+      color_mode:
+      brightness:
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      rgb_color:
+      xy_color:
+      effect:
+      entity_id:
+      - light.shelly_shvin_1_3494546e7416
+      - light.0_lv1_lights
+      - light.0_lv2_lights
+      - light.1_he_lights
+      - light.1_dm_led_lights
+      - light.1_dr_lights
+      - light.1_di_lights
+      icon: mdi:lightbulb-group
+      friendly_name: 'light: all lightbulbs'
+      supported_features: 44
+      state: 'off'
+  icon: mdi:lightbulb-on
+  metadata:
+    switch.switch_all_lights:
+      entity_only: true
+    light.light_all_lightbulbs:
+      entity_only: true
+- id: '1699539950915'
+  name: 'lights: all-on'
+  entities:
+    switch.switch_all_lights:
+      entity_id:
+      - switch.0_br_light_switch
+      - switch.0_bj_main_light_switch
+      - switch.0_ct_light_switch
+      - switch.0_bp_light_switch
+      - switch.0_bc_light_switch
+      - switch.1_dm_light_switch_switch
+      - switch.1_bs_main_light_switch
+      friendly_name: 'switch: all-lights'
+      state: 'on'
+    light.light_all_lightbulbs:
+      min_color_temp_kelvin: 1801
+      max_color_temp_kelvin: 6535
+      min_mireds: 153
+      max_mireds: 555
+      effect_list:
+      - blink
+      - breathe
+      - candle
+      - channel_change
+      - colorloop
+      - finish_effect
+      - fireplace
+      - okay
+      - stop_effect
+      - stop_hue_effect
+      supported_color_modes:
+      - brightness
+      - color_temp
+      - hs
+      - xy
+      color_mode: color_temp
+      brightness: 255
+      color_temp_kelvin: 6535
+      color_temp: 153
+      hs_color:
+      - 54.768
+      - 1.6
+      rgb_color:
+      - 255
+      - 254
+      - 250
+      xy_color:
+      - 0.326
+      - 0.333
+      effect:
+      entity_id:
+      - light.shelly_shvin_1_3494546e7416
+      - light.0_lv1_lights
+      - light.0_lv2_lights
+      - light.1_he_lights
+      - light.1_dm_led_lights
+      - light.1_dr_lights
+      - light.1_di_lights
+      icon: mdi:lightbulb-group
+      friendly_name: 'light: all lightbulbs'
+      supported_features: 44
+      state: 'on'
+  icon: mdi:lightbulb-on
+  metadata:
+    switch.switch_all_lights:
+      entity_only: true
+    light.light_all_lightbulbs:
+      entity_only: true
+- id: '1699540122352'
+  name: panic
+  entities:
+    automation.panic:
+      id: '1699538658847'
+      friendly_name: panic
+      last_triggered: '2023-11-09T14:16:47.554323+00:00'
+      mode: single
+      current: 0
+      state: 'on'
+  icon: mdi:alarm-light-outline
+  metadata:
+    automation.panic:
+      entity_only: true
+- id: '1700329443974'
+  name: 1.DM night
+  entities:
+    switch.1_dm_aeotec_cam_360:
+      friendly_name: 1.DM aeotec cam 360
+      state: 'off'
+    light.1_dm_led_strip:
+      min_color_temp_kelvin: 2702
+      max_color_temp_kelvin: 6535
+      min_mireds: 153
+      max_mireds: 370
+      supported_color_modes:
+      - color_temp
+      - hs
+      color_mode: hs
+      brightness: 86.7
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      - 39
+      - 100
+      rgb_color:
+      - 255
+      - 165
+      - 0
+      xy_color:
+      - 0.562
+      - 0.417
+      friendly_name: 1.DM led-strip
+      supported_features: 0
+      state: 'on'
+    light.1dm_aqara_hub_lightbulb:
+      supported_color_modes:
+      - hs
+      color_mode: hs
+      brightness: 71.4
+      hs_color:
+      - 39
+      - 100
+      rgb_color:
+      - 255
+      - 165
+      - 0
+      xy_color:
+      - 0.562
+      - 0.417
+      friendly_name: 1.DM Aqara-hub Lightbulb
+      supported_features: 0
+      state: 'on'
+  metadata:
+    light.1dm_aqara_hub_lightbulb:
+      entity_only: true
+  icon: mdi:moon-waning-crescent
+- id: '1703951352532'
+  name: 0.LV1 night-lights
+  entities:
+    light.0_lv1_lights:
+      min_color_temp_kelvin: 2000
+      max_color_temp_kelvin: 6535
+      min_mireds: 153
+      max_mireds: 500
+      effect_list:
+      - blink
+      - breathe
+      - channel_change
+      - finish_effect
+      - okay
+      - stop_effect
+      supported_color_modes:
+      - color_temp
+      - xy
+      color_mode: xy
+      brightness: 26
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      - 178.477
+      - 77.255
+      rgb_color:
+      - 58
+      - 255
+      - 250
+      xy_color:
+      - 0.162
+      - 0.348
+      effect:
+      entity_id:
+      - light.0_lv1_lightbulb1
+      - light.0_lv1_lightbulb2
+      - light.0_lv1_lightbulb3
+      icon: mdi:lightbulb-group
+      friendly_name: 0.LV1 lights
+      supported_features: 44
+      state: 'on'
+  icon: mdi:lightbulb-night
+  metadata:
+    light.0_lv1_lights:
+      entity_only: true
+- id: '1703951403866'
+  name: 0.LV2 night-lights
+  entities:
+    light.0_lv2_lights:
+      min_color_temp_kelvin: 1801
+      max_color_temp_kelvin: 6535
+      min_mireds: 153
+      max_mireds: 555
+      effect_list:
+      - blink
+      - breathe
+      - channel_change
+      - finish_effect
+      - okay
+      - stop_effect
+      supported_color_modes:
+      - color_temp
+      - xy
+      color_mode: xy
+      brightness: 97
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      - 184
+      - 100
+      rgb_color:
+      - 0
+      - 238
+      - 255
+      xy_color:
+      - 0.15
+      - 0.317
+      effect:
+      entity_id:
+      - light.0_lv2_lightbulb1
+      - light.0_lv2_lightbulb2
+      icon: mdi:lightbulb-group
+      friendly_name: 0.LV2 lights
+      supported_features: 44
+      state: 'on'
+  icon: mdi:lightbulb-night
+  metadata:
+    light.0_lv2_lights:
+      entity_only: true

@@ -1,0 +1,146 @@
+# Clean Blueprint
+blueprint:
+  name: IKEA styrbar - E2001/E2002 button actions (Z2M)
+  description: define actions for press and hold on all four buttons of the E2001/E2002 switch.
+  domain: automation
+  author: pauldcomanici
+  input:
+    controller_entity:
+      name: button entity
+      description: the action sensor of the controller to use for the automation.
+      default: ""
+      selector:
+        entity:
+          domain:
+            - sensor
+          multiple: false
+    light_entity:
+      name: light entity
+      description: the light entity that will be controlled
+        (light_entity variable is accessable in the actions)
+      default: null
+      selector:
+        entity:
+          domain:
+            - light
+          multiple: false
+    hold_delay:
+      name: hold delay
+      description: if the button has been held more than the configured hold delay, the corresponding held action is triggered.
+      default: 1000
+      selector:
+        number:
+          min: 500.0
+          max: 5000.0
+          unit_of_measurement: milliseconds
+          mode: box
+          step: 100.0
+    light_dim_step:
+      name: light dimmer step
+      description: step to use while dimming
+        (light_dim_step variable is accessable in the actions)
+      default: 10
+      selector:
+        number:
+          min: 5.0
+          max: 25.0
+          mode: box
+          step: 5.0
+    light_large_push:
+      name: light large (top) push
+      default: []
+      selector:
+        action: {}
+    light_large_hold:
+      name: light large (top) hold
+      default: []
+      selector:
+        action: {}
+    light_small_push:
+      name: light small (bottom) push
+      default: []
+      selector:
+        action: {}
+    light_small_hold:
+      name: light small (bottom) hold
+      default: []
+      selector:
+        action: {}
+    arrow_left_push:
+      name: arrow left push
+      default: []
+      selector:
+        action: {}
+    arrow_left_hold:
+      name: arrow left hold
+      default: []
+      selector:
+        action: {}
+    arrow_right_push:
+      name: arrow right push
+      default: []
+      selector:
+        action: {}
+    arrow_right_hold:
+      name: arrow right hold
+      default: []
+      selector:
+        action: {}
+
+mode: single
+max_exceeded: silent
+
+# variables
+variables:
+  light_dim_step: !input light_dim_step
+  light_entity: !input light_entity
+  light_rgb_color: |-
+    {{ state_attr(light_entity, 'rgb_color') }}
+
+trigger:
+  - platform: event
+    event_type: state_changed
+    event_data:
+      entity_id: !input controller_entity
+
+condition:
+  - condition: state
+    entity_id: input_boolean.manual_override_enabled
+    state: "off"
+
+action:
+  - variables:
+      trigger_action: "{{ trigger.event.data.new_state.state }}"
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: '{{ trigger_action == "on" }}'
+        sequence: !input light_large_push
+      - conditions:
+          - condition: template
+            value_template: '{{ trigger_action == "brightness_move_up" }}'
+        sequence: !input light_large_hold
+      - conditions:
+          - condition: template
+            value_template: '{{ trigger_action == "off" }}'
+        sequence: !input light_small_push
+      - conditions:
+          - condition: template
+            value_template: '{{ trigger_action == "brightness_move_down" }}'
+        sequence: !input light_small_hold
+      - conditions:
+          - condition: template
+            value_template: '{{ trigger_action == "arrow_left_click" }}'
+        sequence: !input arrow_left_push
+      - conditions:
+          - condition: template
+            value_template: '{{ trigger_action == "arrow_left_hold" }}'
+        sequence: !input arrow_left_hold
+      - conditions:
+          - condition: template
+            value_template: '{{ trigger_action == "arrow_right_click" }}'
+        sequence: !input arrow_right_push
+      - conditions:
+          - condition: template
+            value_template: '{{ trigger_action == "arrow_right_hold" }}'
+        sequence: !input arrow_right_hold

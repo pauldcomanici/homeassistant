@@ -1,0 +1,150 @@
+blueprint:
+  name: Z2M - philips hue dimmer switch (929002398602)
+  description: Z2M - philips hue dimmer switch (929002398602)
+  author: pauldcomanici
+  domain: automation
+  input:
+    dimmer_switch_action_topic:
+      name: zigbee2mqtt topic with action
+      description: "zigbee2mqtt topic with action for philips hue dimmer switch  (example: zigbee2mqtt/1.DI switch/action)"
+      selector:
+        text:
+    light_entity:
+      name: light entity
+      description: the light entity that will be controlled
+        (light_entity variable is accessable in the actions)
+      default: null
+      selector:
+        entity:
+          domain:
+            - light
+          multiple: false
+    light_dim_step:
+      name: light dimmer step
+      description: step to use while dimming
+        (light_dim_step variable is accessable in the actions)
+      default: 10
+      selector:
+        number:
+          min: 5.0
+          max: 25.0
+          mode: box
+          step: 5.0
+    button_on_press:
+      name: on button - single click
+      description: action to run on click of on button
+      default: []
+      selector:
+        action: {}
+    button_on_hold:
+      name: on button - long press
+      description: action to run on long press of on button
+      default: []
+      selector:
+        action: {}
+    button_off_press:
+      name: off button - single click
+      description: action to run on click of off button
+      default: []
+      selector:
+        action: {}
+    button_off_hold:
+      name: off button - long press
+      description: action to run on long press of off button
+      default: []
+      selector:
+        action: {}
+    button_dim_up_press:
+      name: dim up button - single click
+      description: action to run on click of dim up button
+      default: []
+      selector:
+        action: {}
+    button_dim_up_hold:
+      name: dim up button - long press
+      description: action to run on long press of dim up button
+      default: []
+      selector:
+        action: {}
+    button_dim_down_press:
+      name: dim down button - single click
+      description: action to run on click of dim down button
+      default: []
+      selector:
+        action: {}
+    button_dim_down_hold:
+      name: dim down button - long press
+      description: action to run on long press of dim down button
+      default: []
+      selector:
+        action: {}
+    debug:
+      name: debug flag
+      description: debug flag, allows us to check the flow
+      default: false
+      selector:
+        boolean:
+
+mode: restart
+max_exceeded: silent
+
+# variables
+variables:
+  light_dim_step: !input light_dim_step
+  light_entity: !input light_entity
+  debug: !input debug
+
+trigger:
+  - platform: mqtt
+    topic: !input dimmer_switch_action_topic
+
+condition:
+  - condition: state
+    entity_id: input_boolean.manual_override_enabled
+    state: "off"
+  - condition: or
+    conditions:
+      - condition: numeric_state
+        entity_id: zone.home
+        above: 0
+      - condition: state
+        entity_id: input_boolean.home_guest_presence
+        state: "on"
+
+action:
+  - variables:
+      command: "{{ trigger.payload }}"
+  - if:
+      - condition: template
+        value_template: "{{ debug==true }}"
+    then:
+      - service: notify.persistent_notification
+        metadata: {}
+        data:
+          message: "{{ command }}"
+
+  - choose:
+    - conditions:
+      - "{{ command == 'on_press' }}"
+      sequence: !input button_on_press
+    - conditions:
+      - "{{ command == 'up_press' }}"
+      sequence: !input button_dim_up_press
+    - conditions:
+      - "{{ command == 'down_press' }}"
+      sequence: !input button_dim_down_press
+    - conditions:
+      - "{{ command == 'off_press' }}"
+      sequence: !input button_off_press
+    - conditions:
+      - "{{ command == 'on_hold' }}"
+      sequence: !input button_on_hold
+    - conditions:
+      - "{{ command == 'up_hold' }}"
+      sequence: !input button_dim_up_hold
+    - conditions:
+      - "{{ command == 'down_hold' }}"
+      sequence: !input button_dim_down_hold
+    - conditions:
+      - "{{ command == 'off_hold' }}"
+      sequence: !input button_off_hold

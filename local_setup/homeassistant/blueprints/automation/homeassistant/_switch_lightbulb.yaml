@@ -1,0 +1,74 @@
+blueprint:
+  name: control the lightbulb based on switch state
+  description: control the lightbulb based on switch state and the time of day for best light
+  domain: automation
+  author: pauldcomanici
+  input:
+    light_entity:
+      name: light entity
+      description: "the lightbulb that will be controlled by the switch"
+      selector:
+        entity:
+          domain:
+            - light
+    script_day_lights:
+      name: script entity (day)
+      description: the script that will be executed during the day
+      selector:
+        entity:
+          domain:
+            - script
+    script_night_lights:
+      name: script entity (night)
+      description: the script that will be executed during the night
+      selector:
+        entity:
+          domain:
+            - script
+    switch_entity:
+      name: switch entity
+      description: the switch that turn on or off the lightbulb
+      selector:
+        entity:
+          domain:
+            - switch
+
+# If motion is detected within the delay,
+# we restart the script.
+mode: restart
+max_exceeded: silent
+
+# variables
+variables:
+  light_entity: !input light_entity
+
+trigger:
+  - platform: state
+    id: switch_on
+    entity_id: !input switch_entity
+    to: "on"
+
+condition:
+  - condition: state
+    entity_id: input_boolean.manual_override_enabled
+    state: "off"
+
+action:
+  - if:
+    - condition: sun
+      after: sunset
+      before: sunrise
+    then:
+      - service: !input script_night_lights
+        data:
+          entity_id: !input light_entity
+    else:
+      - if:
+          - condition: sun
+            after: sunrise
+            before: sunset
+        then:
+          - service: !input script_day_lights
+            data:
+              entity_id: !input light_entity
+          

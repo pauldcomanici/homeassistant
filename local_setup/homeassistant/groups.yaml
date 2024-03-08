@@ -1,0 +1,54 @@
+flags_enabled:
+  name: "group: flags enabled"
+  entities:
+    - input_boolean.alert_alarm_enabled
+    - input_boolean.away_random_lighting_enabled
+    - input_boolean.climate_1_dm_enabled
+    - input_boolean.mow_action_enabled
+    - input_boolean.roll_action_enabled
+    - input_boolean.security_auto_arm_night_enabled
+    - input_boolean.security_auto_disarm_night_enabled
+  all: true
+
+ignore_unavailable_entities:
+  name: 'unavailable: ignore entities'
+  entities:
+    # - lawn_mower.0_gr_landroid
+    # - sensor.0_gr_landroid_battery
+    # - sensor.0_gr_landroid_error
+    # - sensor.0_gr_landroid_last_update
+    # - sensor.0_gr_landroid_next_scheduled_start
+    # - sensor.0_gr_landroid_rainsensor_delay
+    # - sensor.0_gr_landroid_rssi
+    # - binary_sensor.0_gr_landroid_online
+    # - binary_sensor.0_gr_landroid_battery_charging
+    # - binary_sensor.0_gr_landroid_rainsensor_triggered
+    - light.0_lv1_wled_couch
+    - select.0_lv1_wled_couch_color_palette
+    - sensor.0_lv1_wled_couch_estimated_current
+    - update.0_lv1_wled_couch_firmware
+    - number.0_lv1_wled_couch_intensity
+    - sensor.0_lv1_wled_couch_ip
+    - sensor.0_lv1_wled_couch_led_count
+    - select.0_lv1_wled_couch_live_override
+    - sensor.0_lv1_wled_couch_max_current
+    - switch.0_lv1_wled_couch_nightlight
+    - select.0_lv1_wled_couch_playlist
+    - select.0_lv1_wled_couch_preset
+    - button.0_lv1_wled_couch_restart
+    - switch.0_lv1_wled_couch_reverse
+    - number.0_lv1_wled_couch_speed
+    - switch.0_lv1_wled_couch_sync_receive
+    - switch.0_lv1_wled_couch_sync_send
+    - sensor.unavailable
+
+lights_ground_floor:
+  name: "light: ground-floor lights"
+  entities:
+    - light.light_ground_floor_lightbulbs
+    - switch.switch_ground_floor_lights
+lights_first_floor:
+  name: "light: first-floor lights"
+  entities:
+    - light.light_first_floor_lightbulbs
+    - switch.switch_first_floor_lights

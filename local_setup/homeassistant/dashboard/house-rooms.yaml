@@ -1,0 +1,3309 @@
+views:
+  - title: rooms
+    path: rooms
+    badges: []
+    cards:
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: back
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace
+            icon: mdi:view-dashboard
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms
+            icon: mdi:home-modern
+            icon_color: blue
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /dashboard-sensors
+            icon: mdi:home-automation
+            icon_color: purple
+          - type: spacer
+          - type: template
+            tap_action:
+              action: none
+            icon_color: ''
+            content: house rooms
+            icon: mdi:home-modern
+      - type: custom:mushroom-title-card
+        title: ground floor
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.BJ', 'name', true) }}
+            secondary: |-
+              {% from 'state.jinja' import temperature %}
+              {{ temperature('sensor.0_bj_tvoc_temperature') }}
+            icon: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.BJ', 'icon') }}
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms/0bj
+            icon_color: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.BJ', 'color') }}
+            badge_color: |-
+              {% if states('switch.0_bj_main_light_switch')=="on" %}
+                yellow
+              {% else %}
+                grey
+              {% endif %}
+            badge_icon: mdi:lightbulb
+            entity: switch.0_bj_main_light_switch
+            double_tap_action:
+              action: toggle
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.CT', 'name', true) }}
+            secondary: >-
+              {% from 'state.jinja' import temperature_with_offset %}
+
+              {{
+              temperature_with_offset('sensor.0_ct_motion_device_temperature',
+              -4) }}
+            icon: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.CT', 'icon') }}
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms/0ct
+            icon_color: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.CT', 'color') }}
+            badge_icon: mdi:lightbulb
+            badge_color: |-
+              {% from 'color.jinja' import light_state %}
+              {{ light_state('switch.0_ct_light_switch') }}
+            entity: switch.0_ct_light_switch
+            double_tap_action:
+              action: toggle
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.BR', 'name', true) }}
+            secondary: >-
+              {% from 'state.jinja' import temperature_with_offset %}
+
+              {{
+              temperature_with_offset('sensor.0_br_motion_device_temperature',
+              -4) }}
+            icon: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.BR', 'icon') }}
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms/0br
+            icon_color: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.BR', 'color') }}
+            double_tap_action:
+              action: toggle
+            badge_color: |-
+              {% if states('switch.0_br_light_switch')=="on" %}
+                yellow
+              {% else %}
+                grey
+              {% endif %}
+            entity: switch.0_br_light_switch
+            badge_icon: mdi:lightbulb
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.HP', 'name', true) }}
+            secondary: '- °C'
+            icon: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.HP', 'icon') }}
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms/0hp
+            icon_color: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.HP', 'color') }}
+            hold_action:
+              action: none
+            entity: light.shelly_shvin_1_3494546e7416
+            multiline_secondary: true
+            badge_color: |-
+              {% if states('light.shelly_shvin_1_3494546e7416')=="on" %}
+                yellow
+              {% else %}
+                grey
+              {% endif %}
+            badge_icon: mdi:lightbulb
+            double_tap_action:
+              action: toggle
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.LV1', 'name', true) }}
+            secondary: |-
+              {% from 'state.jinja' import temperature %}
+              {{ temperature('sensor.0_lv1_tvoc_temperature') }}
+            icon: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.LV1', 'icon') }}
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms/0lv1
+            icon_color: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.LV1', 'color') }}
+            entity: light.0_lv1_lights
+            badge_color: |-
+              {% from 'color.jinja' import light_state %}
+              {{ light_state('light.0_lv1_lights') }}
+            badge_icon: mdi:lightbulb
+            double_tap_action:
+              action: toggle
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.LV2', 'name', true) }}
+            secondary: |-
+              {% from 'state.jinja' import temperature %}
+              {{ temperature('sensor.0_lv1_tvoc_temperature') }}
+            icon: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.LV2', 'icon') }}
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms/0lv2
+            icon_color: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.LV2', 'color') }}
+            badge_icon: mdi:lightbulb
+            badge_color: |-
+              {% if states('light.0_lv2_lights')=="on" %}
+                yellow
+              {% else %}
+                grey
+              {% endif %}
+            entity: light.0_lv2_lights
+            double_tap_action:
+              action: toggle
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.BP', 'name', true) }}
+            secondary: |-
+              {% from 'state.jinja' import temperature %}
+              {{ temperature('sensor.0_bp_door_temperature') }}
+            icon: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.BP', 'icon') }}
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms/0bp
+            badge_color: |-
+              {% if states('switch.0_bp_light_switch')=="on" %}
+                yellow
+              {% else %}
+                grey
+              {% endif %}
+            badge_icon: mdi:lightbulb
+            double_tap_action:
+              action: toggle
+            entity: switch.0_bp_light_switch
+            icon_color: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.BP', 'color') }}
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.BC', 'name', true) }}
+            secondary: |-
+              {% from 'state.jinja' import temperature %}
+              {{ temperature('sensor.0_bc_water_leak_temperature') }}
+            icon: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.BC', 'icon') }}
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms/0bc
+            badge_icon: mdi:lightbulb
+            badge_color: |-
+              {% if states('switch.0_bc_light_switch')=="on" %}
+                yellow
+              {% else %}
+                grey
+              {% endif %}
+            entity: switch.0_bc_light_switch
+            double_tap_action:
+              action: toggle
+            icon_color: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.BC', 'color') }}
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.TS', 'name', true) }}
+            secondary: '- °C'
+            icon: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.TS', 'icon') }}
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms/0ts
+            icon_color: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.TS', 'color') }}
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.GR', 'name', true) }}
+            secondary: '- °C'
+            icon: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.GR', 'icon') }}
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms/0gr
+            icon_color: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.GR', 'color') }}
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.FT', 'name', true) }}
+            secondary: '-'
+            icon: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.FT', 'icon') }}
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms/0ft
+            icon_color: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('0.FT', 'color') }}
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('01.CS', 'name', true) }}
+            secondary: |-
+              {% from 'state.jinja' import temperature %}
+              {{ temperature('sensor.01_cs_thermostat_temperature') }}
+            icon: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('01.CS', 'icon') }}
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms/01cs
+            icon_color: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('01.CS', 'color') }}
+      - type: custom:mushroom-title-card
+        title: first floor
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('1.DM', 'name', true) }}
+            secondary: >-
+              {% from 'state.jinja' import temperature %}
+
+              {{
+              temperature('sensor.1_dm_air_conditioning_temperature_measurement')
+              }}
+            icon: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('1.DM', 'icon') }}
+            tap_action:
+              action: navigate
+              navigation_path: 1dm
+            icon_color: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('1.DM', 'color') }}
+            badge_icon: mdi:lightbulb
+            badge_color: |-
+              {% from 'color.jinja' import light_state %}
+              {{ light_state('light.1_dm_led_lights') }}
+            entity: light.1_dm_led_lights
+            hold_action:
+              action: none
+            double_tap_action:
+              action: toggle
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('1.DRM', 'name', true) }}
+            secondary: >-
+              {% from 'state.jinja' import temperature_with_offset %}
+
+              {{
+              temperature_with_offset('sensor.1_drm_motion_device_temperature',
+              -4) }}
+            icon: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('1.DRM', 'icon') }}
+            tap_action:
+              action: navigate
+              navigation_path: 1drm
+            icon_color: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('1.DRM', 'color') }}
+            badge_icon: mdi:lightbulb
+            badge_color: |-
+              {% from 'color.jinja' import light_state %}
+              {{ light_state('switch.1_drm_main_switch') }}
+            entity: switch.1_drm_main_switch
+            double_tap_action:
+              action: toggle
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('1.DE', 'name', true) }}
+            secondary: '- °C'
+            icon: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('1.DE', 'icon') }}
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms/1de
+            icon_color: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('1.DE', 'color') }}
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('1.DI', 'name', true) }}
+            secondary: '- °C'
+            icon: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('1.DI', 'icon') }}
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms/1di
+            entity: light.1_di_lights
+            double_tap_action:
+              action: toggle
+            badge_color: |-
+              {% from 'color.jinja' import light_state %}
+              {{ light_state('light.1_di_lights') }}
+            badge_icon: mdi:lightbulb
+            icon_color: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('1.DI', 'color') }}
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('1.DR', 'name', true) }}
+            secondary: |-
+              {% from 'state.jinja' import temperature %}
+              {{ temperature('sensor.1_dr_motion_device_temperature') }}
+            icon: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('1.DR', 'icon') }}
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms/1dr
+            badge_icon: mdi:lightbulb
+            badge_color: |-
+              {% from 'color.jinja' import light_state %}
+              {{ light_state('light.1_dr_lights') }}
+            entity: light.1_dr_lights
+            double_tap_action:
+              action: toggle
+            icon_color: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('1.DR', 'color') }}
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('1.HE', 'name', true) }}
+            secondary: '- °C'
+            icon: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('1.HE', 'icon') }}
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms/1he
+            badge_icon: mdi:lightbulb
+            badge_color: |-
+              {% from 'color.jinja' import light_state %}
+              {{ light_state('light.1_he_lights') }}
+            entity: light.1_he_lights
+            double_tap_action:
+              action: toggle
+            icon_color: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('1.HE', 'color') }}
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('1.BS', 'name', true) }}
+            secondary: |-
+              {% from 'state.jinja' import temperature %}
+              {{ temperature('sensor.1_bs_tvoc_temperature') }}
+            icon: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('1.BS', 'icon') }}
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms/1bs
+            icon_color: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('1.BS', 'color') }}
+            badge_color: |-
+              {% from 'color.jinja' import light_state %}
+              {{ light_state('switch.1_bs_main_light_switch') }}
+            badge_icon: mdi:lightbulb
+            double_tap_action:
+              action: toggle
+            entity: switch.1_bs_main_light_switch
+      - type: custom:mushroom-title-card
+        title: attic
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('2.PD', 'name', true) }}
+            secondary: '- °C'
+            icon: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('2.PD', 'icon') }}
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms/2pd
+            icon_color: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('2.PD', 'color') }}
+  - title: 0.FT
+    path: 0ft
+    badges: []
+    cards:
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: back
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace
+            icon: mdi:view-dashboard
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms
+            icon: mdi:home-modern
+            icon_color: blue
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /dashboard-sensors
+            icon: mdi:home-automation
+            icon_color: purple
+          - type: spacer
+          - type: template
+            icon: mdi:home-import-outline
+            content: 0.FT front
+            picture: ''
+  - title: 0.BJ
+    path: 0bj
+    badges: []
+    cards:
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: back
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace
+            icon: mdi:view-dashboard
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms
+            icon: mdi:home-modern
+            icon_color: blue
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /dashboard-sensors
+            icon: mdi:home-automation
+            icon_color: purple
+          - type: spacer
+          - type: template
+            icon: mdi:shower-head
+            content: 0.BJ bathroom
+            picture: ''
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: template
+            icon: |-
+              {% from 'icon.jinja' import door_state %}
+              {{ door_state('binary_sensor.0_bj_window_contact', true) }}
+            entity: binary_sensor.0_bj_window_contact
+            icon_color: |-
+              {% from 'color.jinja' import door_state_outside %}
+              {{ door_state_outside('binary_sensor.0_bj_window_contact') }}
+            content: ''
+            tap_action:
+              action: more-info
+          - type: template
+            icon: |-
+              {% from 'icon.jinja' import door_state %}
+              {{ door_state('binary_sensor.0_bj_door_contact') }}
+            entity: binary_sensor.0_bj_door_contact
+            icon_color: |-
+              {% from 'color.jinja' import door_state_inside %}
+              {{ door_state_inside('binary_sensor.0_bj_door_contact') }}
+            content: ''
+            tap_action:
+              action: more-info
+      - type: grid
+        square: true
+        columns: 5
+        cards:
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'state.jinja' import temperature %}
+              {{ temperature('sensor.0_bj_tvoc_temperature') }}
+            secondary: ''
+            icon: mdi:thermometer
+            layout: vertical
+            entity: sensor.0_bj_tvoc_device_temperature
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''sensor.0_bj_tvoc_humidity'') }}%'
+            secondary: ''
+            icon: mdi:water-percent
+            layout: vertical
+            entity: sensor.0_bj_tvoc_humidity
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''binary_sensor.0_bj_motion_occupancy'') }}'
+            secondary: ''
+            icon: mdi:motion-sensor
+            layout: vertical
+            entity: binary_sensor.0_bj_motion_occupancy
+            icon_color: |-
+              {% if states('binary_sensor.0_bj_motion_occupancy')=="on" %}
+                orange
+              {% endif %}
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''sensor.0_bj_motion_illuminance_lux'') }}'
+            secondary: ''
+            icon: mdi:sun-wireless
+            layout: vertical
+            entity: sensor.0_bj_motion_illuminance_lux
+            icon_color: ''
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''sensor.0_bj_tvoc_voc'') }}'
+            secondary: ''
+            icon: mdi:air-filter
+            layout: vertical
+            entity: sensor.0_bj_tvoc_voc
+            icon_color: |-
+              {% from 'color.jinja' import voc_state %}
+              {{ voc_state('sensor.0_bj_tvoc_voc') }}
+            tap_action:
+              action: more-info
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: ''
+            subtitle: lights
+            title_tap_action:
+              action: none
+            subtitle_tap_action:
+              action: navigate
+              navigation_path: /lovelace/lights
+          - type: horizontal-stack
+            cards:
+              - show_name: true
+                show_icon: true
+                type: button
+                tap_action:
+                  action: toggle
+                entity: switch.0_bj_main_light_switch
+                name: 0.BJ main
+                icon_height: 50px
+                icon: mdi:lightbulb
+  - title: 0.CT
+    path: 0ct
+    badges: []
+    cards:
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: back
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace
+            icon: mdi:view-dashboard
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms
+            icon: mdi:home-modern
+            icon_color: blue
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /dashboard-sensors
+            icon: mdi:home-automation
+            icon_color: purple
+          - type: spacer
+          - type: template
+            icon: mdi:cogs
+            content: 0.CT technical
+            picture: ''
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: template
+            icon: |-
+              {% from 'icon.jinja' import door_state %}
+              {{ door_state('binary_sensor.0_ct_window_contact', true) }}
+            entity: binary_sensor.0_ct_window_contact
+            icon_color: |-
+              {% from 'color.jinja' import door_state_outside %}
+              {{ door_state_outside('binary_sensor.0_ct_window_contact') }}
+            content: ''
+            tap_action:
+              action: more-info
+          - type: template
+            icon: |-
+              {% from 'icon.jinja' import door_state %}
+              {{ door_state('binary_sensor.0_ct_door_contact') }}
+            entity: binary_sensor.0_ct_door_contact
+            icon_color: |-
+              {% from 'color.jinja' import door_state_inside %}
+              {{ door_state_inside('binary_sensor.0_ct_door_contact') }}
+            content: ''
+            tap_action:
+              action: more-info
+      - square: true
+        type: grid
+        columns: 5
+        cards:
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''sensor.0_ct_motion_device_temperature'')|int - 3 }}°C'
+            secondary: ''
+            icon: mdi:thermometer
+            layout: vertical
+            entity: sensor.0_ct_motion_device_temperature
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''binary_sensor.0_ct_motion_occupancy'') }}'
+            secondary: ''
+            icon: mdi:motion-sensor
+            layout: vertical
+            entity: binary_sensor.0_ct_motion_occupancy
+            icon_color: |-
+              {% if states('binary_sensor.0_ct_motion_occupancy')=="on" %}
+                orange
+              {% endif %}
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''sensor.0_ct_motion_illuminance_lux'') }}'
+            secondary: ''
+            icon: mdi:sun-wireless
+            layout: vertical
+            entity: sensor.0_ct_motion_illuminance_lux
+            icon_color: ''
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'label.jinja' import smoke_state %}
+              {{ smoke_state('binary_sensor.0_ct_smoke_smoke') }}
+            secondary: ''
+            icon: mdi:smoke
+            layout: vertical
+            entity: binary_sensor.0_ct_smoke_smoke
+            icon_color: |-
+              {% from 'color.jinja' import smoke_state %}
+              {{ smoke_state('binary_sensor.0_ct_smoke_smoke') }}
+            tap_action:
+              action: more-info
+            badge_icon: mdi:hand-okay
+            badge_color: |-
+              {% from 'color.jinja' import smoke_state %}
+              {{ smoke_state('binary_sensor.0_ct_smoke_smoke') }}
+            double_tap_action:
+              action: call-service
+              service: automation.trigger
+              target:
+                entity_id: automation.alert_alarm_smoke_acknowledged
+              data:
+                skip_condition: true
+          - type: custom:mushroom-template-card
+            primary: ''
+            secondary: '{{ states(''binary_sensor.0_bc_gas_gas'') }}'
+            icon: mdi:gas-burner
+            entity: binary_sensor.0_bc_gas_gas
+            tap_action:
+              action: more-info
+            layout: vertical
+            icon_color: |-
+              {% from 'color.jinja' import gas_state %}
+              {{ gas_state('binary_sensor.0_bc_gas_gas') }}
+            badge_icon: mdi:hand-okay
+            badge_color: |-
+              {% from 'color.jinja' import gas_state %}
+              {{ gas_state('binary_sensor.0_bc_gas_gas') }}
+            double_tap_action:
+              action: call-service
+              service: automation.trigger
+              target:
+                entity_id: automation.alert_alarm_gas_ack
+              data:
+                skip_condition: true
+      - type: horizontal-stack
+        cards:
+          - show_name: true
+            show_icon: true
+            type: button
+            tap_action:
+              action: toggle
+            entity: switch.0_ct_light_switch
+            name: 0.CT
+            icon_height: 50px
+            icon: mdi:lightbulb
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''switch.0_ct_plug_heater'') }}'
+            secondary: ''
+            icon: mdi:power-socket-eu
+            layout: vertical
+            entity: switch.0_ct_plug_heater
+            icon_color: |-
+              {% if states('switch.0_ct_plug_heater')=="on" %}
+                orange
+              {% endif %}
+  - title: 0.BR
+    path: 0br
+    badges: []
+    cards:
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: back
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace
+            icon: mdi:view-dashboard
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms
+            icon: mdi:home-modern
+            icon_color: blue
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /dashboard-sensors
+            icon: mdi:home-automation
+            icon_color: purple
+          - type: spacer
+          - type: template
+            icon: mdi:library
+            content: 0.BR office
+            picture: ''
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: template
+            tap_action:
+              action: more-info
+            icon: |-
+              {% from 'icon.jinja' import door_state %}
+              {{ door_state('binary_sensor.0_br_window_contact', true) }}
+            icon_color: |-
+              {% from 'color.jinja' import door_state_outside %}
+              {{ door_state_outside('binary_sensor.0_br_window_contact') }}
+          - type: template
+            tap_action:
+              action: more-info
+            entity: binary_sensor.0_br_door_contact
+            icon: |-
+              {% from 'icon.jinja' import door_state %}
+              {{ door_state('binary_sensor.0_br_door_contact') }}
+            icon_color: |-
+              {% from 'color.jinja' import door_state_inside %}
+              {{ door_state_inside('binary_sensor.0_br_door_contact') }}
+      - type: grid
+        square: true
+        columns: 4
+        cards:
+          - type: custom:mushroom-template-card
+            primary: >-
+              {% from 'state.jinja' import temperature_with_offset %}
+
+              {{
+              temperature_with_offset('sensor.0_br_motion_device_temperature',
+              -4) }}
+            secondary: ''
+            icon: mdi:thermometer
+            layout: vertical
+            entity: sensor.0_br_motion_device_temperature
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: '-%'
+            secondary: ''
+            icon: mdi:water-percent
+            layout: vertical
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''binary_sensor.0_br_motion_occupancy'') }}'
+            secondary: ''
+            icon: mdi:motion-sensor
+            layout: vertical
+            entity: binary_sensor.0_br_motion_occupancy
+            icon_color: |-
+              {% if states('binary_sensor.0_br_motion_occupancy')=="on" %}
+                orange
+              {% endif %}
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''sensor.0_br_motion_illuminance_lux'') }}'
+            secondary: ''
+            icon: mdi:sun-wireless
+            layout: vertical
+            entity: sensor.0_br_motion_illuminance_lux
+            icon_color: ''
+            tap_action:
+              action: more-info
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: ''
+            subtitle: lights
+            title_tap_action:
+              action: none
+            subtitle_tap_action:
+              action: navigate
+              navigation_path: /lovelace/lights
+          - type: horizontal-stack
+            cards:
+              - show_name: true
+                show_icon: true
+                type: button
+                tap_action:
+                  action: toggle
+                entity: switch.0_br_light_switch
+                name: 0.BR
+                icon_height: 50px
+                icon: mdi:lightbulb
+  - title: 0.HP
+    path: 0hp
+    badges: []
+    cards:
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: back
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace
+            icon: mdi:view-dashboard
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms
+            icon: mdi:home-modern
+            icon_color: blue
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /dashboard-sensors
+            icon: mdi:home-automation
+            icon_color: purple
+          - type: spacer
+          - type: template
+            icon: mdi:location-enter
+            content: 0.HP hall
+            picture: ''
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: template
+            tap_action:
+              action: more-info
+            icon: |-
+              {% from 'icon.jinja' import door_state %}
+              {{ door_state('binary_sensor.0_hp_door_contact') }}
+            icon_color: |-
+              {% from 'color.jinja' import door_state_outside %}
+              {{ door_state_outside('binary_sensor.0_hp_door_contact') }}
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: ''
+            subtitle: lights
+          - type: light
+            entity: light.shelly_shvin_1_3494546e7416
+  - title: 0.LV1
+    path: 0lv1
+    badges: []
+    cards:
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: back
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace
+            icon: mdi:view-dashboard
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms
+            icon: mdi:home-modern
+            icon_color: blue
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /dashboard-sensors
+            icon: mdi:home-automation
+            icon_color: purple
+          - type: spacer
+          - type: template
+            icon: mdi:sofa
+            content: 0.LV1 living
+            picture: ''
+      - type: grid
+        square: true
+        columns: 4
+        cards:
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'state.jinja' import temperature %}
+              {{ temperature('sensor.0_lv1_tvoc_temperature') }}
+            secondary: ''
+            icon: mdi:thermometer
+            layout: vertical
+            entity: sensor.0_lv1_tvoc_temperature
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''sensor.0_lv1_tvoc_humidity'') }}%'
+            secondary: ''
+            icon: mdi:water-percent
+            layout: vertical
+            entity: sensor.0_lv1_tvoc_humidity
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: >-
+              {{
+              states('binary_sensor.0lv2_fp2_presence_sensor_presence_sensor_4')
+              }}
+            secondary: ''
+            icon: mdi:motion-sensor
+            layout: vertical
+            entity: binary_sensor.0lv2_fp2_presence_sensor_presence_sensor_4
+            icon_color: >-
+              {% if
+              states('binary_sensor.0lv2_fp2_presence_sensor_presence_sensor_4')=="on"
+              %}
+                orange
+              {% endif %}
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''sensor.0_lv1_tvoc_voc'') }}'
+            secondary: ''
+            icon: mdi:air-filter
+            layout: vertical
+            entity: sensor.0_lv1_tvoc_voc
+            icon_color: |-
+              {% from 'color.jinja' import voc_state %}
+              {{ voc_state('sensor.0_lv1_tvoc_voc') }}
+            tap_action:
+              action: more-info
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: ''
+            subtitle: lights
+            subtitle_tap_action:
+              action: navigate
+              navigation_path: /lovelace/lights
+          - type: custom:mushroom-light-card
+            entity: light.0_lv1_lights
+            name: 0.LV1
+            fill_container: false
+            secondary_info: state
+            primary_info: name
+            show_brightness_control: true
+            show_color_control: true
+            use_light_color: true
+            show_color_temp_control: true
+          - type: custom:mushroom-light-card
+            entity: light.0_lv1_lightbulb1
+            name: 0.LV1 1
+            fill_container: false
+            secondary_info: state
+            primary_info: name
+            show_brightness_control: true
+            show_color_control: true
+            use_light_color: true
+            show_color_temp_control: true
+          - type: custom:mushroom-light-card
+            entity: light.0_lv1_lightbulb2
+            name: 0.LV1 2
+            fill_container: false
+            secondary_info: state
+            primary_info: name
+            show_brightness_control: true
+            show_color_control: true
+            use_light_color: true
+            show_color_temp_control: true
+          - type: custom:mushroom-light-card
+            entity: light.0_lv1_lightbulb3
+            name: 0.LV1 3
+            fill_container: false
+            secondary_info: state
+            primary_info: name
+            show_brightness_control: true
+            show_color_control: true
+            use_light_color: true
+            show_color_temp_control: true
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: ''
+            subtitle: power
+            subtitle_tap_action:
+              action: navigate
+              navigation_path: /lovelace/power
+          - type: entities
+            entities:
+              - entity: switch.0_lv1_power_outlet
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-template-card
+                primary: ''
+                secondary: '1'
+                icon: mdi:power-socket-eu
+                entity: switch.0lv1_power_outlet_1
+                icon_color: |-
+                  {% from 'color.jinja' import plug_state %}
+                  {{ plug_state('switch.0lv1_power_outlet_1') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+              - type: custom:mushroom-template-card
+                primary: ''
+                secondary: '2'
+                icon: mdi:power-socket-eu
+                entity: switch.0lv1_power_outlet_2
+                icon_color: |-
+                  {% from 'color.jinja' import plug_state %}
+                  {{ plug_state('switch.0lv1_power_outlet_2') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+              - type: custom:mushroom-template-card
+                primary: ''
+                secondary: '3'
+                icon: mdi:power-socket-eu
+                entity: switch.0lv1_power_outlet_3
+                icon_color: |-
+                  {% from 'color.jinja' import plug_state %}
+                  {{ plug_state('switch.0lv1_power_outlet_3') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+              - type: custom:mushroom-template-card
+                primary: ''
+                secondary: '4'
+                icon: mdi:power-socket-eu
+                entity: switch.0lv1_power_outlet_4
+                icon_color: |-
+                  {% from 'color.jinja' import plug_state %}
+                  {{ plug_state('switch.0lv1_power_outlet_4') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+              - type: custom:mushroom-template-card
+                primary: ''
+                secondary: USB
+                icon: mdi:usb
+                entity: switch.0lv1_power_usb
+                icon_color: |-
+                  {% from 'color.jinja' import plug_state %}
+                  {{ plug_state('switch.0lv1_power_usb') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-template-card
+                primary: ''
+                secondary: plug
+                icon: mdi:power-socket-eu
+                entity: switch.0_lv1_plug
+                icon_color: |-
+                  {% from 'color.jinja' import plug_state %}
+                  {{ plug_state('switch.0_lv1_plug') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+              - type: custom:mushroom-template-card
+                primary: ''
+                secondary: switch7
+                icon: mdi:power-socket-eu
+                entity: switch.0_lv1_switch7
+                icon_color: |-
+                  {% from 'color.jinja' import plug_state %}
+                  {{ plug_state('switch.0_lv1_switch7') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+  - title: 0.LV2
+    path: 0lv2
+    badges: []
+    cards:
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: back
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace
+            icon: mdi:view-dashboard
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms
+            icon: mdi:home-modern
+            icon_color: blue
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /dashboard-sensors
+            icon: mdi:home-automation
+            icon_color: purple
+          - type: spacer
+          - type: template
+            icon: mdi:sofa-single
+            content: 0.LV2 living
+            picture: ''
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: template
+            tap_action:
+              action: more-info
+            icon: |-
+              {% from 'icon.jinja' import door_state %}
+              {{ door_state('binary_sensor.0_lv2_door_contact') }}
+            icon_color: |-
+              {% from 'color.jinja' import door_state_outside %}
+              {{ door_state_outside('binary_sensor.0_lv2_door_contact') }}
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: ''
+            subtitle: lights
+            subtitle_tap_action:
+              action: navigate
+              navigation_path: /lovelace/lights
+          - type: custom:mushroom-light-card
+            entity: light.0_lv2_lights
+            name: 0.LV2
+            fill_container: false
+            secondary_info: state
+            primary_info: name
+            show_brightness_control: true
+            show_color_control: true
+            use_light_color: true
+            show_color_temp_control: true
+          - type: custom:mushroom-light-card
+            entity: light.0_lv2_lightbulb1
+            name: 0.LV2 1
+            fill_container: false
+            secondary_info: state
+            primary_info: name
+            show_brightness_control: true
+            show_color_control: true
+            use_light_color: true
+            show_color_temp_control: true
+          - type: custom:mushroom-light-card
+            entity: light.0_lv2_lightbulb2
+            name: 0.LV2 2
+            fill_container: false
+            secondary_info: state
+            primary_info: name
+            show_brightness_control: true
+            show_color_control: true
+            use_light_color: true
+            show_color_temp_control: true
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: ''
+            subtitle: climate
+            subtitle_tap_action:
+              action: navigate
+              navigation_path: /lovelace/climate
+          - show_name: true
+            show_icon: true
+            type: button
+            tap_action:
+              action: toggle
+            entity: light.alert_lights
+            name: AC on/off
+            icon: mdi:air-conditioner
+            icon_height: 50px
+      - type: grid
+        square: true
+        columns: 4
+        cards:
+          - type: custom:mushroom-template-card
+            primary: lux
+            secondary: >-
+              {{
+              states('sensor.0lv2_fp2_presence_sensor_light_sensor_light_level')
+              }}
+            icon: mdi:sun-wireless
+            layout: vertical
+            entity: sensor.0lv2_fp2_presence_sensor_light_sensor_light_level
+            icon_color: >-
+              {% from 'color.jinja' import lux_value %}
+
+              {{
+              lux_value('sensor.0lv2_fp2_presence_sensor_light_sensor_light_level')
+              }}
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: 0.BC
+            secondary: >-
+              {{
+              states('binary_sensor.0lv2_fp2_presence_sensor_presence_sensor_3')
+              }}
+            icon: mdi:motion-sensor
+            layout: vertical
+            entity: binary_sensor.0lv2_fp2_presence_sensor_presence_sensor_3
+            icon_color: >-
+              {% from 'color.jinja' import motion_state %}
+
+              {{
+              motion_state('binary_sensor.0lv2_fp2_presence_sensor_presence_sensor_3')
+              }}
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: 0.LV1
+            secondary: >-
+              {{
+              states('binary_sensor.0lv2_fp2_presence_sensor_presence_sensor_4')
+              }}
+            icon: mdi:motion-sensor
+            layout: vertical
+            entity: binary_sensor.0lv2_fp2_presence_sensor_presence_sensor_4
+            icon_color: >-
+              {% from 'color.jinja' import motion_state %}
+
+              {{
+              motion_state('binary_sensor.0lv2_fp2_presence_sensor_presence_sensor_4')
+              }}
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: 0.LV2
+            secondary: >-
+              {{
+              states('binary_sensor.0lv2_fp2_presence_sensor_presence_sensor_2')
+              }}
+            icon: mdi:motion-sensor
+            layout: vertical
+            entity: binary_sensor.0lv2_fp2_presence_sensor_presence_sensor_2
+            icon_color: >-
+              {% from 'color.jinja' import motion_state %}
+
+              {{
+              motion_state('binary_sensor.0lv2_fp2_presence_sensor_presence_sensor_2')
+              }}
+            tap_action:
+              action: more-info
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: ''
+            subtitle: power
+            subtitle_tap_action:
+              action: navigate
+              navigation_path: /lovelace/power
+          - type: entities
+            entities:
+              - entity: switch.0_lv2_power_outlet
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-template-card
+                primary: ''
+                secondary: flare
+                icon: mdi:power-socket-eu
+                entity: switch.0lv2_surge_protector_outlet_1
+                icon_color: |-
+                  {% from 'color.jinja' import plug_state %}
+                  {{ plug_state('switch.0lv2_surge_protector_outlet_1') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+              - type: custom:mushroom-template-card
+                primary: ''
+                secondary: '2'
+                icon: mdi:power-socket-eu
+                entity: switch.0lv2_surge_protector_outlet_2
+                icon_color: |-
+                  {% from 'color.jinja' import plug_state %}
+                  {{ plug_state('switch.0lv2_surge_protector_outlet_2') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+              - type: custom:mushroom-template-card
+                primary: ''
+                secondary: cam
+                icon: mdi:power-socket-eu
+                entity: switch.0lv2_surge_protector_outlet_3
+                icon_color: |-
+                  {% from 'color.jinja' import plug_state %}
+                  {{ plug_state('switch.0lv2_surge_protector_outlet_3') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+              - type: custom:mushroom-template-card
+                primary: ''
+                secondary: sonos
+                icon: mdi:power-socket-eu
+                entity: switch.0lv2_surge_protector_outlet_4
+                icon_color: |-
+                  {% from 'color.jinja' import plug_state %}
+                  {{ plug_state('switch.0lv2_surge_protector_outlet_4') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+              - type: custom:mushroom-template-card
+                primary: ''
+                secondary: USB
+                icon: mdi:usb
+                entity: switch.0lv2_surge_protector_usb
+                icon_color: |-
+                  {% from 'color.jinja' import plug_state %}
+                  {{ plug_state('switch.0lv2_surge_protector_usb') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: ''
+            subtitle: entertainment
+            subtitle_tap_action:
+              action: navigate
+              navigation_path: /lovelace/entertainment
+          - type: vertical-stack
+            cards:
+              - type: media-control
+                entity: media_player.0lv2_sonos300
+                theme: Mushroom
+              - type: custom:mushroom-media-player-card
+                entity: media_player.0lv2_sonos300
+                fill_container: false
+                volume_controls:
+                  - volume_set
+                  - volume_mute
+                media_controls: []
+                collapsible_controls: false
+                name: Volume
+                icon: mdi:volume-source
+                use_media_info: false
+                show_volume_level: true
+                layout: horizontal
+                primary_info: none
+                secondary_info: state
+  - title: 0.BP
+    path: 0bp
+    badges: []
+    cards:
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: back
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace
+            icon: mdi:view-dashboard
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms
+            icon: mdi:home-modern
+            icon_color: blue
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /dashboard-sensors
+            icon: mdi:home-automation
+            icon_color: purple
+          - type: spacer
+          - type: template
+            icon: mdi:water-plus
+            content: 0.BP cellar
+            picture: ''
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: template
+            icon: |-
+              {% from 'icon.jinja' import door_state %}
+              {{ door_state('binary_sensor.0_bp_window_contact', true) }}
+            entity: binary_sensor.0_bp_window_contact
+            icon_color: |-
+              {% from 'color.jinja' import door_state_outside %}
+              {{ door_state_outside('binary_sensor.0_bp_window_contact') }}
+            content: ''
+            tap_action:
+              action: more-info
+          - type: template
+            icon: |-
+              {% from 'icon.jinja' import door_state %}
+              {{ door_state('binary_sensor.0_bp_door_contact') }}
+            entity: binary_sensor.0_bp_door_contact
+            icon_color: |-
+              {% from 'color.jinja' import door_state_inside %}
+              {{ door_state_inside('binary_sensor.0_bp_door_contact') }}
+            content: ''
+            tap_action:
+              action: more-info
+      - square: true
+        type: grid
+        columns: 5
+        cards:
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'state.jinja' import temperature %}
+              {{ temperature('sensor.0_bp_door_temperature') }}
+            secondary: ''
+            icon: mdi:thermometer
+            layout: vertical
+            entity: sensor.0_bp_door_temperature
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'state.jinja' import temperature %}
+              {{ temperature('sensor.0_bp_aerq_temperature_measurement') }}
+            secondary: ''
+            icon: mdi:thermometer
+            layout: vertical
+            entity: sensor.0_bp_aerq_temperature_measurement
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''sensor.0_bp_aerq_relative_humidity_measurement'') }}%'
+            secondary: ''
+            icon: mdi:water-percent
+            layout: vertical
+            entity: sensor.0_bp_aerq_relative_humidity_measurement
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''binary_sensor.0_bp_motion_occupancy'') }}'
+            secondary: ''
+            icon: mdi:motion-sensor
+            layout: vertical
+            entity: binary_sensor.0_bp_motion_occupancy
+            icon_color: |-
+              {% if states('binary_sensor.0_bp_motion_occupancy')=="on" %}
+                orange
+              {% endif %}
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''sensor.0_bp_motion_illuminance_lux'') }}'
+            secondary: ''
+            icon: mdi:sun-wireless
+            layout: vertical
+            entity: sensor.0_bp_motion_illuminance_lux
+            icon_color: ''
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% if states('binary_sensor.water_detector_moisture')=="on" %}
+                moisture
+              {% else %}
+                dry
+              {% endif %}
+            secondary: ''
+            icon: mdi:water-alert
+            layout: vertical
+            entity: binary_sensor.water_detector_moisture
+            icon_color: |-
+              {% from 'color.jinja' import water_leak_state %}
+              {{ water_leak_state('binary_sensor.water_detector_moisture') }}
+            tap_action:
+              action: more-info
+            badge_color: |-
+              {% from 'color.jinja' import water_leak_state %}
+              {{ water_leak_state('binary_sensor.water_detector_moisture') }}
+            badge_icon: mdi:hand-okay
+            double_tap_action:
+              action: call-service
+              service: automation.trigger
+              target:
+                entity_id: automation.alert_alarm_flood_acknowledged
+              data:
+                skip_condition: true
+      - type: horizontal-stack
+        cards:
+          - show_name: true
+            show_icon: true
+            type: button
+            tap_action:
+              action: toggle
+            entity: switch.0_bp_light_switch
+            name: 0.BP
+            icon_height: 50px
+            icon: mdi:lightbulb
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''switch.0_bp_plug'') }}'
+            secondary: ''
+            icon: mdi:power-socket-eu
+            layout: vertical
+            entity: switch.0_bp_plug
+            icon_color: |-
+              {% if states('switch.0_bp_plug')=="on" %}
+                orange
+              {% endif %}
+      - type: vertical-stack
+        cards:
+          - type: entities
+            entities:
+              - entity: input_number.0_bp_inside_temperature_threshold
+              - entity: input_number.0_bp_outside_temperature_threshold
+              - entity: input_datetime.0_bp_temperature_threshold_check_time
+            title: virtual sensors
+            show_header_toggle: false
+  - title: 0.BC
+    path: 0bc
+    badges: []
+    cards:
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: back
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace
+            icon: mdi:view-dashboard
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms
+            icon: mdi:home-modern
+            icon_color: blue
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /dashboard-sensors
+            icon: mdi:home-automation
+            icon_color: purple
+          - type: spacer
+          - type: template
+            icon: mdi:countertop
+            content: 0.BC Kitchen
+            picture: ''
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: template
+            tap_action:
+              action: more-info
+            icon: |-
+              {% from 'icon.jinja' import door_state %}
+              {{ door_state('binary_sensor.0_bc_window_contact', true) }}
+            icon_color: |-
+              {% from 'color.jinja' import door_state_outside %}
+              {{ door_state_outside('binary_sensor.0_bc_window_contact') }}
+      - square: true
+        type: grid
+        columns: 5
+        cards:
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'state.jinja' import temperature %}
+              {{ temperature('sensor.0_bc_water_leak_temperature') }}
+            secondary: ''
+            icon: mdi:thermometer
+            layout: vertical
+            entity: sensor.0_bc_water_leak_temperature
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: >-
+              {{
+              states('binary_sensor.0lv2_fp2_presence_sensor_presence_sensor_3')
+              }}
+            secondary: ''
+            icon: mdi:motion-sensor
+            layout: vertical
+            entity: binary_sensor.0lv2_fp2_presence_sensor_presence_sensor_3
+            icon_color: >-
+              {% if
+              states('binary_sensor.0lv2_fp2_presence_sensor_presence_sensor_3')=="on"
+              %}
+                orange
+              {% endif %}
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% if states('binary_sensor.0_bc_water_leak_water')=="on" %}
+                moisture
+              {% else %}
+                dry
+              {% endif %}
+            secondary: ''
+            icon: mdi:water-alert
+            layout: vertical
+            entity: binary_sensor.0_bc_water_leak_water
+            icon_color: |-
+              {% from 'color.jinja' import water_leak_state %}
+              {{ water_leak_state('binary_sensor.0_bc_water_leak_water') }}
+            tap_action:
+              action: more-info
+            badge_icon: mdi:hand-okay
+            badge_color: |-
+              {% from 'color.jinja' import water_leak_state %}
+              {{ water_leak_state('binary_sensor.0_bc_water_leak_water') }}
+            double_tap_action:
+              action: call-service
+              service: automation.trigger
+              target:
+                entity_id: automation.alert_alarm_flood_acknowledged
+              data:
+                skip_condition: true
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'label.jinja' import smoke_state %}
+              {{ smoke_state('binary_sensor.0_bc_smoke_alarm') }}
+            secondary: ''
+            icon: mdi:smoke
+            layout: vertical
+            entity: binary_sensor.0_bc_smoke_alarm
+            icon_color: |-
+              {% from 'color.jinja' import smoke_state %}
+              {{ smoke_state('binary_sensor.0_bc_smoke_alarm') }}
+            tap_action:
+              action: more-info
+            badge_icon: mdi:hand-okay
+            badge_color: |-
+              {% from 'color.jinja' import smoke_state %}
+              {{ smoke_state('binary_sensor.0_bc_smoke_alarm') }}
+            double_tap_action:
+              action: call-service
+              service: automation.trigger
+              target:
+                entity_id: automation.alert_alarm_smoke_acknowledged
+              data:
+                skip_condition: true
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''binary_sensor.0_bc_gas_gas'') }}'
+            secondary: ''
+            icon: mdi:gas-burner
+            entity: binary_sensor.0_bc_gas_gas
+            tap_action:
+              action: more-info
+            layout: vertical
+            icon_color: |-
+              {% from 'color.jinja' import gas_state %}
+              {{ gas_state('binary_sensor.0_bc_gas_gas') }}
+            badge_icon: mdi:hand-okay
+            badge_color: |-
+              {% from 'color.jinja' import gas_state %}
+              {{ gas_state('binary_sensor.0_bc_gas_gas') }}
+            double_tap_action:
+              action: call-service
+              service: automation.trigger
+              target:
+                entity_id: automation.alert_alarm_gas_ack
+              data:
+                skip_condition: true
+      - type: horizontal-stack
+        cards:
+          - show_name: true
+            show_icon: true
+            type: button
+            tap_action:
+              action: toggle
+            entity: switch.0_bc_light_switch
+            name: 0.BC
+            icon_height: 50px
+            icon: mdi:light-switch
+          - type: custom:mushroom-light-card
+            entity: light.0_bc_lightbar
+            layout: vertical
+            name: bar
+            fill_container: false
+            secondary_info: none
+            primary_info: name
+            show_brightness_control: true
+            icon: phu:play
+          - type: custom:mushroom-template-card
+            primary: fridge
+            secondary: ''
+            icon: mdi:power-socket-eu
+            layout: vertical
+            entity: switch.0_bc_plug
+            icon_color: |-
+              {% if states('switch.0_bc_plug')=="on" %}
+                orange
+              {% endif %}
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: ''
+            subtitle: vacuum
+          - type: custom:vacuum-card
+            entity: vacuum.0bc_roborock_s7_maxv
+  - title: 0.TS
+    path: 0ts
+    badges: []
+    cards:
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: back
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace
+            icon: mdi:view-dashboard
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms
+            icon: mdi:home-modern
+            icon_color: blue
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /dashboard-sensors
+            icon: mdi:home-automation
+            icon_color: purple
+          - type: spacer
+          - type: template
+            icon: mdi:home
+            content: 0.TS terace
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: ''
+            subtitle: roll
+            title_tap_action:
+              action: none
+            subtitle_tap_action:
+              action: navigate
+              navigation_path: /lovelace/roller-shade
+          - type: custom:mushroom-template-card
+            primary: ''
+            secondary: ''
+            icon: mdi:transfer-up
+            badge_icon: ''
+            badge_color: ''
+            layout: vertical
+            icon_color: ''
+            tap_action:
+              action: call-service
+              service: script.1694085505020
+              target: {}
+          - type: custom:mushroom-template-card
+            primary: ''
+            secondary: ''
+            icon: mdi:square
+            badge_icon: ''
+            badge_color: ''
+            layout: vertical
+            icon_color: ''
+            tap_action:
+              action: call-service
+              service: script.0ts_roll_stop
+              target: {}
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-template-card
+                primary: ''
+                secondary: ''
+                icon: mdi:transfer-down
+                badge_icon: mdi:circle
+                badge_color: >-
+                  {% if
+                  states('binary_sensor.0_ts_roll_right_down_contact')=="off" %}
+                    green
+                  {% else %}
+                    red
+                  {% endif %}
+                layout: vertical
+                icon_color: ''
+                tap_action:
+                  action: call-service
+                  service: script.0ts_roll_down
+                  target: {}
+              - type: custom:mushroom-template-card
+                primary: ''
+                secondary: ''
+                icon: mdi:transfer-down
+                badge_icon: mdi:circle
+                badge_color: >-
+                  {% if
+                  states('binary_sensor.0_ts_roll_left_down_contact')=="off" %}
+                    green
+                  {% else %}
+                    red
+                  {% endif %}
+                layout: vertical
+                icon_color: ''
+                tap_action:
+                  action: call-service
+                  service: script.0ts_roll_down
+                  target: {}
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: ''
+            subtitle: power
+            subtitle_tap_action:
+              action: navigate
+              navigation_path: /lovelace/power
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-template-card
+                primary: AP
+                secondary: ''
+                icon: mdi:power-socket-eu
+                entity: switch.0_ts_plug
+                icon_color: |-
+                  {% from 'color.jinja' import plug_state %}
+                  {{ plug_state('switch.0_ts_plug') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+              - type: custom:mushroom-template-card
+                primary: all
+                secondary: ''
+                icon: mdi:power-socket-eu
+                entity: switch.0_ts_power
+                icon_color: |-
+                  {% from 'color.jinja' import plug_state %}
+                  {{ plug_state('switch.0_ts_power') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+              - type: custom:mushroom-template-card
+                primary: '1'
+                secondary: ''
+                icon: mdi:power-socket-eu
+                entity: switch.0ts_power_outlet1
+                icon_color: |-
+                  {% from 'color.jinja' import plug_state %}
+                  {{ plug_state('switch.0ts_power_outlet1') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+              - type: custom:mushroom-template-card
+                primary: '2'
+                secondary: ''
+                icon: mdi:power-socket-eu
+                entity: switch.0ts_power_outlet1
+                icon_color: |-
+                  {% from 'color.jinja' import plug_state %}
+                  {{ plug_state('switch.0ts_power_outlet2') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+  - title: 0.GR
+    path: 0gr
+    badges: []
+    cards:
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: back
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace
+            icon: mdi:view-dashboard
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms
+            icon: mdi:home-modern
+            icon_color: blue
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /dashboard-sensors
+            icon: mdi:home-automation
+            icon_color: purple
+          - type: spacer
+          - type: template
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            icon: mdi:grass
+            content: 0.GR garden
+      - type: vertical-stack
+        cards:
+          - image: default
+            image_size: '4'
+            show_animation: true
+            show_status: true
+            show_toolbar: true
+            type: custom:landroid-card
+            entity: vacuum.0_gr_landroid
+            image_left: false
+            show_name: true
+            compact_view: false
+          - type: entities
+            entities:
+              - entity: input_boolean.mow_action_enabled
+              - entity: schedule.mow_schedule
+  - title: 0-1.CS
+    path: 01cs
+    badges: []
+    cards:
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: back
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace
+            icon: mdi:view-dashboard
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms
+            icon: mdi:home-modern
+            icon_color: blue
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /dashboard-sensors
+            icon: mdi:home-automation
+            icon_color: purple
+          - type: spacer
+          - type: template
+            icon: mdi:stairs
+            content: 0-1.CS stairs
+            picture: ''
+      - square: true
+        type: grid
+        columns: 5
+        cards:
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'state.jinja' import temperature %}
+              {{ temperature('sensor.01_cs_thermostat_temperature') }}
+            secondary: ''
+            icon: mdi:thermometer
+            layout: vertical
+            entity: sensor.01_cs_thermostat_temperature
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''sensor.01_cs_thermostat_humidity'') }}%'
+            secondary: ''
+            icon: mdi:water-percent
+            layout: vertical
+            entity: sensor.01_cs_thermostat_humidity
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''binary_sensor.01_cs_motion_occupancy'') }}'
+            secondary: ''
+            icon: mdi:motion-sensor
+            layout: vertical
+            entity: binary_sensor.01_cs_motion_occupancy
+            icon_color: |-
+              {% if states('binary_sensor.01_cs_motion_occupancy')=="on" %}
+                orange
+              {% endif %}
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''sensor.01_cs_motion_illuminance_lux'') }}'
+            secondary: ''
+            icon: mdi:sun-wireless
+            layout: vertical
+            entity: sensor.01_cs_motion_illuminance_lux
+            icon_color: ''
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''sensor.01_cs_thermostat_pressure'') }}'
+            secondary: ''
+            icon: mdi:thermometer-lines
+            layout: vertical
+            entity: sensor.01_cs_thermostat_pressure
+            icon_color: ''
+            tap_action:
+              action: more-info
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: ''
+            subtitle: events
+          - type: entities
+            entities:
+              - entity: sensor.01_cs_switch_action
+            show_header_toggle: false
+  - title: 1.DM
+    path: 1dm
+    icon: ''
+    badges: []
+    cards:
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: back
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace
+            icon: mdi:view-dashboard
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms
+            icon: mdi:home-modern
+            icon_color: blue
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /dashboard-sensors
+            icon: mdi:home-automation
+            icon_color: purple
+          - type: spacer
+          - type: template
+            icon: mdi:bed-king
+            content: 1.DM bedroom
+            picture: ''
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: template
+            icon: |-
+              {% from 'icon.jinja' import door_state %}
+              {{ door_state('binary_sensor.1_dm_door_outside_contact') }}
+            entity: binary_sensor.1_dm_door_outside_contact
+            icon_color: >-
+              {% from 'color.jinja' import door_state_outside %}
+
+              {{ door_state_outside('binary_sensor.1_dm_door_outside_contact')
+              }}
+            content: ''
+            tap_action:
+              action: more-info
+          - type: template
+            tap_action:
+              action: more-info
+            entity: binary_sensor.1_dm_door_contact
+            icon: |-
+              {% from 'icon.jinja' import door_state %}
+              {{ door_state('binary_sensor.1_dm_door_contact') }}
+            icon_color: |-
+              {% from 'color.jinja' import door_state_inside %}
+              {{ door_state_inside('binary_sensor.1_dm_door_contact') }}
+      - square: true
+        type: grid
+        cards:
+          - type: custom:mushroom-template-card
+            primary: >-
+              {% from 'state.jinja' import temperature %}
+
+              {{
+              temperature('sensor.1_dm_air_conditioning_temperature_measurement')
+              }}
+            secondary: ''
+            icon: mdi:thermometer
+            layout: vertical
+            entity: sensor.1_dm_air_conditioning_temperature_measurement
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: >-
+              {{
+              states('sensor.1_dm_air_conditioning_relative_humidity_measurement')
+              }}%
+            secondary: ''
+            icon: mdi:water-percent
+            layout: vertical
+            entity: sensor.1_dm_air_conditioning_relative_humidity_measurement
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''binary_sensor.1_dm_aeotec_cam_360_motion'') }}'
+            secondary: ''
+            icon: mdi:motion-sensor
+            layout: vertical
+            entity: binary_sensor.1_dm_aeotec_cam_360_motion
+            icon_color: |-
+              {% from 'color.jinja' import motion_state %}
+              {{ voc_state('switch.1_bs_main_light_switch') }}
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''sensor.1_dm_air_conditioning_air_quality'') }}'
+            secondary: ''
+            icon: mdi:air-filter
+            layout: vertical
+            entity: sensor.1_dm_air_conditioning_air_quality
+            icon_color: |-
+              {% from 'color.jinja' import caqi_state %}
+              {{ caqi_state('sensor.1_dm_air_conditioning_air_quality') }}
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'label.jinja' import smoke_state %}
+              {{ smoke_state('binary_sensor.1_dm_smoke_smoke') }}
+            secondary: ''
+            icon: mdi:smoke
+            layout: vertical
+            entity: binary_sensor.1_dm_smoke_smoke
+            icon_color: |-
+              {% from 'color.jinja' import smoke_state %}
+              {{ smoke_state('binary_sensor.1_dm_smoke_smoke') }}
+            tap_action:
+              action: more-info
+            badge_color: |-
+              {% from 'color.jinja' import smoke_state %}
+              {{ smoke_state('binary_sensor.1_dm_smoke_smoke') }}
+            badge_icon: mdi:hand-okay
+            double_tap_action:
+              action: call-service
+              service: automation.trigger
+              target:
+                entity_id: automation.alert_alarm_smoke_acknowledged
+              data:
+                skip_condition: true
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'label.jinja' import sound_state %}
+              {{ sound_state('binary_sensor.1_dm_aeotec_cam_360_sound') }}
+            secondary: ''
+            icon: mdi:music-note-off
+            layout: vertical
+            entity: binary_sensor.1_dm_aeotec_cam_360_sound
+            icon_color: |-
+              {% if states('binary_sensor.1_dm_aeotec_cam_360_sound')=='on' %}
+                orange
+              {% endif %}
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: Si
+            secondary: ''
+            icon: |-
+              {% from 'icon.jinja' import bed_occupied %}
+              {{ bed_occupied('binary_sensor.1_dm_bed_occupancy_silvana') }}
+            layout: vertical
+            entity: binary_sensor.1_dm_bed_occupancy_silvana
+            icon_color: ''
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: Pa
+            secondary: ''
+            icon: |-
+              {% from 'icon.jinja' import bed_occupied %}
+              {{ bed_occupied('binary_sensor.1_dm_bed_occupancy_paul') }}
+            layout: vertical
+            entity: binary_sensor.1_dm_bed_occupancy_paul
+            icon_color: ''
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: bed
+            secondary: ''
+            icon: |-
+              {% from 'icon.jinja' import bed_occupied %}
+              {{ bed_occupied('binary_sensor.1_dm_bed_occupied') }}
+            layout: vertical
+            entity: binary_sensor.1_dm_bed_occupied
+            icon_color: ''
+            tap_action:
+              action: more-info
+        columns: 5
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: ''
+            subtitle: roll
+            title_tap_action:
+              action: none
+            subtitle_tap_action:
+              action: navigate
+              navigation_path: /lovelace/roller-shade
+          - type: custom:mushroom-template-card
+            primary: ''
+            secondary: ''
+            icon: mdi:transfer-up
+            badge_icon: mdi:circle
+            badge_color: |-
+              {% if states('binary_sensor.1_dm_roll_up_contact')=="off" %}
+                green
+              {% else %}
+                red
+              {% endif %}
+            layout: vertical
+            icon_color: ''
+            tap_action:
+              action: call-service
+              service: script.1dm_roll_up
+              target: {}
+          - type: custom:mushroom-template-card
+            primary: ''
+            secondary: ''
+            icon: mdi:square
+            badge_icon: ''
+            badge_color: ''
+            layout: vertical
+            icon_color: ''
+            tap_action:
+              action: call-service
+              service: script.1dm_roll_stop
+              target: {}
+          - type: custom:mushroom-template-card
+            primary: ''
+            secondary: ''
+            icon: mdi:transfer-down
+            badge_icon: mdi:circle
+            badge_color: |-
+              {% if states('binary_sensor.1_dm_roll_down_contact')=="off" %}
+                green
+              {% else %}
+                red
+              {% endif %}
+            layout: vertical
+            icon_color: ''
+            tap_action:
+              action: call-service
+              service: script.1dm_roll_down
+              target: {}
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: ''
+            subtitle: lights
+            title_tap_action:
+              action: none
+            subtitle_tap_action:
+              action: navigate
+              navigation_path: /lovelace/lights
+          - type: vertical-stack
+            cards:
+              - type: horizontal-stack
+                cards:
+                  - type: custom:mushroom-light-card
+                    layout: vertical
+                    name: night-lights
+                    fill_container: false
+                    secondary_info: none
+                    primary_info: name
+                    show_brightness_control: false
+                    entity: light.1_dm_led_lights
+                    tap_action:
+                      action: call-service
+                      service: script.1dm_night_lights
+                      target: {}
+                  - type: custom:mushroom-light-card
+                    entity: light.1_dm_led_lights
+                    layout: vertical
+                    fill_container: false
+                    secondary_info: none
+                    primary_info: name
+                    show_brightness_control: true
+                  - show_name: true
+                    show_icon: true
+                    type: button
+                    tap_action:
+                      action: toggle
+                    entity: switch.1_dm_light_switch_switch
+                    name: 1.DM main
+              - type: custom:mushroom-light-card
+                entity: light.1dm_aqara_hub_lightbulb
+                show_color_control: true
+                show_brightness_control: true
+                use_light_color: true
+                icon: phu:aqara-hub-n15-g2
+              - type: custom:mushroom-light-card
+                entity: light.1_dm_led_strip
+                use_light_color: true
+                show_brightness_control: true
+                show_color_temp_control: true
+                show_color_control: true
+                collapsible_controls: false
+                icon: phu:aqara-t1
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: ''
+            subtitle: climate
+            title_tap_action:
+              action: none
+            subtitle_tap_action:
+              action: navigate
+              navigation_path: /lovelace/climate
+          - type: vertical-stack
+            cards:
+              - type: thermostat
+                entity: climate.1_dm_air_conditioning
+              - type: entities
+                entities:
+                  - entity: input_boolean.climate_1_dm_enabled
+                  - entity: input_number.1_dm_climate_temperature
+                  - entity: input_number.1_dm_climate_away
+                  - entity: input_number.1_dm_climate_home
+                  - entity: sensor.1_dm_climate_temp_diff
+                state_color: false
+                show_header_toggle: false
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: ''
+            subtitle: power
+            subtitle_tap_action:
+              action: navigate
+              navigation_path: /lovelace/power
+          - type: entities
+            entities:
+              - entity: switch.1_dm_power_outlet
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-template-card
+                primary: ''
+                secondary: cam
+                icon: mdi:power-socket-eu
+                entity: switch.1_dm_power_outlet1
+                icon_color: |-
+                  {% from 'color.jinja' import plug_state %}
+                  {{ plug_state('switch.1_dm_power_outlet1') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+                hold_action:
+                  action: more-info
+              - type: custom:mushroom-template-card
+                primary: ''
+                secondary: '2'
+                icon: mdi:power-socket-eu
+                entity: switch.1_dm_power_outlet2
+                icon_color: |-
+                  {% from 'color.jinja' import plug_state %}
+                  {{ plug_state('switch.1_dm_power_outlet2') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+                hold_action:
+                  action: more-info
+              - type: custom:mushroom-template-card
+                primary: ''
+                secondary: '3'
+                icon: mdi:power-socket-eu
+                entity: switch.1_dm_power_outlet3
+                icon_color: |-
+                  {% from 'color.jinja' import plug_state %}
+                  {{ plug_state('switch.1_dm_power_outlet3') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+                hold_action:
+                  action: more-info
+              - type: custom:mushroom-template-card
+                primary: ''
+                secondary: led
+                icon: mdi:power-socket-eu
+                entity: switch.1_dm_power_outlet4
+                icon_color: |-
+                  {% from 'color.jinja' import plug_state %}
+                  {{ plug_state('switch.1_dm_power_outlet4') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+                hold_action:
+                  action: more-info
+              - type: custom:mushroom-template-card
+                primary: ''
+                secondary: USB
+                icon: mdi:usb
+                entity: switch.1_dm_power_usb
+                icon_color: |-
+                  {% from 'color.jinja' import plug_state %}
+                  {{ plug_state('switch.1_dm_power_usb') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+                hold_action:
+                  action: more-info
+          - type: entities
+            entities:
+              - entity: switch.1_dm_power_left_outlet
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-template-card
+                primary: ''
+                secondary: '1'
+                icon: mdi:power-socket-eu
+                entity: switch.1_dm_power_left_outlet_1
+                icon_color: |-
+                  {% from 'color.jinja' import plug_state %}
+                  {{ plug_state('switch.1_dm_power_left_outlet_1') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+                hold_action:
+                  action: more-info
+              - type: custom:mushroom-template-card
+                primary: ''
+                secondary: '2'
+                icon: mdi:power-socket-eu
+                entity: switch.1_dm_power_left_outlet_2
+                icon_color: |-
+                  {% from 'color.jinja' import plug_state %}
+                  {{ plug_state('switch.1_dm_power_left_outlet_2') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+                hold_action:
+                  action: more-info
+              - type: custom:mushroom-template-card
+                primary: ''
+                secondary: '3'
+                icon: mdi:power-socket-eu
+                entity: switch.1_dm_power_left_outlet_3
+                icon_color: |-
+                  {% from 'color.jinja' import plug_state %}
+                  {{ plug_state('switch.1_dm_power_left_outlet_3') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+                hold_action:
+                  action: more-info
+              - type: custom:mushroom-template-card
+                primary: ''
+                secondary: '4'
+                icon: mdi:power-socket-eu
+                entity: switch.1_dm_power_left_outlet_4
+                icon_color: |-
+                  {% from 'color.jinja' import plug_state %}
+                  {{ plug_state('switch.1_dm_power_left_outlet_4') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+                hold_action:
+                  action: more-info
+              - type: custom:mushroom-template-card
+                primary: ''
+                secondary: USB
+                icon: mdi:usb
+                entity: switch.1_dm_power_left_usb
+                icon_color: |-
+                  {% from 'color.jinja' import plug_state %}
+                  {{ plug_state('switch.1_dm_power_left_usb') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+                hold_action:
+                  action: more-info
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: ''
+            subtitle: sensors
+            subtitle_tap_action:
+              action: navigate
+              navigation_path: /dashboard-sensors
+          - type: entities
+            entities:
+              - entity: switch.1_dm_aeotec_cam_360
+              - entity: binary_sensor.1_dm_aeotec_cam_360_motion
+              - entity: binary_sensor.1_dm_aeotec_cam_360_sound
+            show_header_toggle: false
+  - title: 1.DRM
+    path: 1drm
+    badges: []
+    cards:
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: back
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace
+            icon: mdi:view-dashboard
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms
+            icon: mdi:home-modern
+            icon_color: blue
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /dashboard-sensors
+            icon: mdi:home-automation
+            icon_color: purple
+          - type: spacer
+          - type: template
+            icon: mdi:hanger
+            content: 1.DRM dressing
+            picture: ''
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: template
+            icon: |-
+              {% from 'icon.jinja' import door_state %}
+              {{ door_state('binary_sensor.1_drm_window_contact', true) }}
+            entity: binary_sensor.1_drm_window_contact
+            icon_color: |-
+              {% from 'color.jinja' import door_state_outside %}
+              {{ door_state_outside('binary_sensor.1_drm_window_contact') }}
+            content: ''
+            tap_action:
+              action: more-info
+          - type: template
+            tap_action:
+              action: more-info
+            entity: binary_sensor.1_drm_door_contact
+            icon: |-
+              {% from 'icon.jinja' import door_state %}
+              {{ door_state('binary_sensor.1_drm_door_contact') }}
+            icon_color: |-
+              {% from 'color.jinja' import door_state_inside %}
+              {{ door_state_inside('binary_sensor.1_drm_door_contact') }}
+      - square: true
+        type: grid
+        cards:
+          - type: custom:mushroom-template-card
+            primary: >-
+              {% from 'state.jinja' import temperature_with_offset %}
+
+              {{
+              temperature_with_offset('sensor.1_drm_motion_device_temperature',
+              -4) }}
+            secondary: ''
+            icon: mdi:thermometer
+            layout: vertical
+            entity: sensor.1_drm_motion_device_temperature
+            tap_action:
+              action: more-info
+            icon_color: ''
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''binary_sensor.1_drm_motion_occupancy'') }}'
+            secondary: ''
+            icon: mdi:motion-sensor
+            layout: vertical
+            entity: binary_sensor.1_drm_motion_occupancy
+            icon_color: |-
+              {% from 'color.jinja' import motion_state %}
+              {{ motion_state('binary_sensor.1_drm_motion_occupancy') }}
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''sensor.1_drm_motion_illuminance_lux'') }}'
+            secondary: ''
+            icon: mdi:sun-wireless
+            layout: vertical
+            entity: sensor.1_drm_motion_illuminance_lux
+            icon_color: |-
+              {% from 'color.jinja' import lux_value %}
+              {{ lux_value('sensor.1_drm_motion_illuminance_lux') }}
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'label.jinja' import water_leak %}
+              {{ water_leak('binary_sensor.1_drm_water_leak_water_leak') }}
+            secondary: ''
+            icon: mdi:water-alert
+            layout: vertical
+            entity: binary_sensor.1_drm_water_leak_water_leak
+            icon_color: >-
+              {% from 'color.jinja' import water_leak_state %}
+
+              {{ water_leak_state('binary_sensor.1_drm_water_leak_water_leak')
+              }}
+            tap_action:
+              action: more-info
+            badge_color: >-
+              {% from 'color.jinja' import water_leak_state %}
+
+              {{ water_leak_state('binary_sensor.1_drm_water_leak_water_leak')
+              }}
+            badge_icon: mdi:hand-okay
+            double_tap_action:
+              action: call-service
+              service: automation.trigger
+              target:
+                entity_id: automation.alert_alarm_flood
+              data:
+                skip_condition: true
+        columns: 4
+      - type: horizontal-stack
+        cards:
+          - show_name: false
+            show_icon: true
+            type: button
+            icon: mdi:light-switch
+            hold_action:
+              action: none
+            show_state: false
+            theme: Mushroom
+            icon_height: 50px
+            entity: switch.1_drm_main_switch
+          - type: custom:mushroom-light-card
+            entity: light.1_drm_lightbulb
+            layout: vertical
+            icon: phu:bulb-sultan-v2
+            primary_info: none
+            secondary_info: none
+            use_light_color: true
+            show_brightness_control: true
+            show_color_temp_control: false
+            show_color_control: true
+  - title: 1.DE
+    path: 1de
+    badges: []
+    cards:
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: back
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace
+            icon: mdi:view-dashboard
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms
+            icon: mdi:home-modern
+            icon_color: blue
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /dashboard-sensors
+            icon: mdi:home-automation
+            icon_color: purple
+          - type: spacer
+          - type: template
+            icon: mdi:home
+            content: 1.DE bedroom
+            picture: ''
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: template
+            icon: |-
+              {% from 'icon.jinja' import door_state %}
+              {{ door_state('binary_sensor.1_de_window_contact', true) }}
+            entity: binary_sensor.1_de_window_contact
+            icon_color: |-
+              {% from 'color.jinja' import door_state_outside %}
+              {{ door_state_outside('binary_sensor.1_de_window_contact') }}
+            content: ''
+            tap_action:
+              action: more-info
+          - type: template
+            tap_action:
+              action: more-info
+            entity: binary_sensor.1_de_door_contact
+            icon: |-
+              {% from 'icon.jinja' import door_state %}
+              {{ door_state('binary_sensor.1_de_door_contact') }}
+            icon_color: |-
+              {% from 'color.jinja' import door_state_inside %}
+              {{ door_state_inside('binary_sensor.1_de_door_contact') }}
+      - type: grid
+        cards:
+          - type: custom:mushroom-template-card
+            primary: ''
+            secondary: |-
+              {% from 'label.jinja' import smoke_state %}
+              {{ smoke_state('binary_sensor.1_de_smoke_smoke') }}
+            icon: mdi:smoke
+            layout: vertical
+            entity: binary_sensor.1_de_smoke_smoke
+            icon_color: |-
+              {% from 'color.jinja' import smoke_state %}
+              {{ smoke_state('binary_sensor.1_de_smoke_smoke') }}
+            tap_action:
+              action: more-info
+  - title: 1.DI
+    path: 1di
+    badges: []
+    cards:
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: back
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace
+            icon: mdi:view-dashboard
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms
+            icon: mdi:home-modern
+            icon_color: blue
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /dashboard-sensors
+            icon: mdi:home-automation
+            icon_color: purple
+          - type: spacer
+          - type: template
+            icon: mdi:teddy-bear
+            content: 1.DI bedroom
+            picture: ''
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: template
+            icon: |-
+              {% from 'icon.jinja' import door_state %}
+              {{ door_state('binary_sensor.1_di_window_contact', true) }}
+            entity: binary_sensor.1_di_window_contact
+            icon_color: |-
+              {% from 'color.jinja' import door_state_outside %}
+              {{ door_state_outside('binary_sensor.1_di_window_contact') }}
+            content: ''
+            tap_action:
+              action: more-info
+          - type: template
+            tap_action:
+              action: more-info
+            entity: binary_sensor.1_di_door_contact
+            icon: |-
+              {% from 'icon.jinja' import door_state %}
+              {{ door_state('binary_sensor.1_di_door_contact') }}
+            icon_color: |-
+
+              {% from 'color.jinja' import door_state_inside %}
+              {{ door_state_inside('binary_sensor.1_di_door_contact') }}
+      - type: grid
+        cards:
+          - type: custom:mushroom-template-card
+            primary: ''
+            secondary: |-
+              {% from 'label.jinja' import smoke_state %}
+              {{ smoke_state('binary_sensor.1_di_smoke_smoke') }}
+            icon: mdi:smoke
+            layout: vertical
+            entity: binary_sensor.1_di_smoke_smoke
+            icon_color: |-
+              {% from 'color.jinja' import smoke_state %}
+              {{ smoke_state('binary_sensor.1_di_smoke_smoke') }}
+            tap_action:
+              action: more-info
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: ''
+            subtitle: lights
+            subtitle_tap_action:
+              action: navigate
+              navigation_path: /lovelace/lights
+          - type: custom:mushroom-light-card
+            entity: light.1_di_lights
+            name: 1.DI
+            fill_container: false
+            secondary_info: state
+            primary_info: name
+            show_brightness_control: true
+            show_color_control: true
+            use_light_color: true
+            show_color_temp_control: true
+            icon: phu:bulb-sultan-group-v2
+          - type: custom:mushroom-light-card
+            entity: light.1_di_lightbulb1
+            name: 1.DI 1
+            fill_container: false
+            secondary_info: state
+            primary_info: name
+            show_brightness_control: true
+            show_color_control: true
+            use_light_color: true
+            show_color_temp_control: true
+            icon: phu:bulb-sultan-v2
+          - type: custom:mushroom-light-card
+            entity: light.1_di_lightbulb2
+            name: 1.DI 2
+            fill_container: false
+            secondary_info: state
+            primary_info: name
+            show_brightness_control: true
+            show_color_control: true
+            use_light_color: true
+            show_color_temp_control: true
+            icon: phu:bulb-sultan-v2
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: ''
+            subtitle: power
+            subtitle_tap_action:
+              action: navigate
+              navigation_path: /lovelace/power
+          - type: entities
+            entities:
+              - entity: switch.1_di_plug
+            show_header_toggle: false
+  - title: 1.DR
+    path: 1dr
+    badges: []
+    cards:
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: back
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace
+            icon: mdi:view-dashboard
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms
+            icon: mdi:home-modern
+            icon_color: blue
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /dashboard-sensors
+            icon: mdi:home-automation
+            icon_color: purple
+          - type: spacer
+          - type: template
+            icon: |-
+              {% from 'areas.jinja' import area %}
+              {{ area('1.DR', 'icon') }}
+            content: 1.DR dressing
+            picture: ''
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: template
+            tap_action:
+              action: more-info
+            entity: binary_sensor.1_dr_door_contact
+            icon: |-
+              {% from 'icon.jinja' import door_state %}
+              {{ door_state('binary_sensor.1_dr_door_contact') }}
+            icon_color: |-
+              {% from 'color.jinja' import door_state_inside %}
+              {{ door_state_inside('binary_sensor.1_dr_door_contact') }}
+      - type: grid
+        square: true
+        columns: 4
+        cards:
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'state.jinja' import temperature %}
+              {{ temperature('sensor.1_dr_motion_device_temperature') }}
+            secondary: ''
+            icon: mdi:thermometer
+            layout: vertical
+            entity: sensor.1_dr_motion_device_temperature
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''binary_sensor.1_dr_motion_occupancy'') }}'
+            secondary: ''
+            icon: mdi:motion-sensor
+            layout: vertical
+            entity: binary_sensor.1_dr_motion_occupancy
+            icon_color: |-
+              {% from 'color.jinja' import motion_state %}
+              {{ motion_state('binary_sensor.1_dr_motion_occupancy') }}
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''sensor.1_dr_motion_illuminance_lux'') }}'
+            secondary: ''
+            icon: mdi:sun-wireless
+            layout: vertical
+            entity: sensor.1_dr_motion_illuminance_lux
+            icon_color: ''
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'label.jinja' import water_leak %}
+              {{ water_leak('binary_sensor.1_dr_water_leak_water_leak') }}
+            secondary: ''
+            icon: mdi:water-alert
+            layout: vertical
+            entity: binary_sensor.1_dr_water_leak_water_leak
+            icon_color: |-
+              {% from 'color.jinja' import water_leak_state %}
+              {{ water_leak_state('binary_sensor.1_dr_water_leak_water_leak') }}
+            tap_action:
+              action: more-info
+            badge_color: |-
+              {% from 'color.jinja' import water_leak_state %}
+              {{ water_leak_state('binary_sensor.1_dr_water_leak_water_leak') }}
+            badge_icon: mdi:hand-okay
+            double_tap_action:
+              action: call-service
+              service: automation.trigger
+              target:
+                entity_id: automation.alert_alarm_flood_acknowledged
+              data:
+                skip_condition: true
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-light-card
+            entity: light.1_dr_lights
+            layout: vertical
+            name: 1.DR
+            fill_container: false
+            secondary_info: none
+            primary_info: name
+            show_brightness_control: true
+          - type: custom:mushroom-light-card
+            entity: light.1_dr_lightbulb1
+            layout: vertical
+            name: 1.DR 1
+            fill_container: false
+            secondary_info: none
+            primary_info: name
+            show_brightness_control: true
+          - type: custom:mushroom-light-card
+            entity: light.1_dr_lightbulb2
+            layout: vertical
+            name: 1.DR 2
+            fill_container: false
+            secondary_info: none
+            primary_info: name
+            show_brightness_control: true
+  - title: 1.HE
+    path: 1he
+    badges: []
+    cards:
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: back
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace
+            icon: mdi:view-dashboard
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms
+            icon: mdi:home-modern
+            icon_color: blue
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /dashboard-sensors
+            icon: mdi:home-automation
+            icon_color: purple
+          - type: spacer
+          - type: template
+            icon: mdi:home
+            content: 1.HE hall
+            picture: ''
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-light-card
+            entity: light.1_he_lights
+            layout: vertical
+            name: 1.HE
+            fill_container: false
+            secondary_info: none
+            primary_info: name
+            show_brightness_control: true
+          - type: custom:mushroom-light-card
+            entity: light.shelly_shvin_1_3494546f024c
+            layout: vertical
+            name: 1.HE 1
+            fill_container: false
+            secondary_info: none
+            primary_info: name
+            show_brightness_control: true
+          - type: custom:mushroom-light-card
+            entity: light.shelly_shvin_1_3494546e7149
+            layout: vertical
+            name: 1.HE 2
+            fill_container: false
+            secondary_info: none
+            primary_info: name
+            show_brightness_control: true
+  - title: 1.BS
+    path: 1bs
+    badges: []
+    cards:
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: back
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace
+            icon: mdi:view-dashboard
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms
+            icon: mdi:home-modern
+            icon_color: blue
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /dashboard-sensors
+            icon: mdi:home-automation
+            icon_color: purple
+          - type: spacer
+          - type: template
+            icon: mdi:shower
+            content: 1.BS bathroom
+            picture: ''
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: template
+            icon: |-
+              {% from 'icon.jinja' import door_state %}
+              {{ door_state('binary_sensor.1_bs_window_contact', true) }}
+            entity: binary_sensor.1_bs_window_contact
+            icon_color: |-
+              {% from 'color.jinja' import door_state_outside %}
+              {{ door_state_outside('binary_sensor.1_bs_window_contact') }}
+            content: ''
+            tap_action:
+              action: more-info
+          - type: template
+            tap_action:
+              action: more-info
+            entity: binary_sensor.1_bs_door_contact
+            icon: |-
+              {% from 'icon.jinja' import door_state %}
+              {{ door_state('binary_sensor.1_bs_door_contact') }}
+            icon_color: |-
+              {% from 'color.jinja' import door_state_inside %}
+              {{ door_state_inside('binary_sensor.1_bs_door_contact') }}
+      - type: grid
+        square: true
+        columns: 5
+        cards:
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'state.jinja' import temperature %}
+              {{ temperature('sensor.1_bs_tvoc_temperature') }}
+            secondary: ''
+            icon: mdi:thermometer
+            layout: vertical
+            tap_action:
+              action: more-info
+            entity: sensor.1_bs_tvoc_temperature
+            icon_color: ''
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''sensor.1_bs_tvoc_humidity'') }}%'
+            secondary: ''
+            icon: mdi:water-percent
+            layout: vertical
+            entity: sensor.1_bs_tvoc_humidity
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''binary_sensor.1_bs_motion_occupancy'') }}'
+            secondary: ''
+            icon: mdi:motion-sensor
+            layout: vertical
+            icon_color: |-
+              {% if states('binary_sensor.1_bs_motion_occupancy')=="on" %}
+                orange
+              {% endif %}
+            tap_action:
+              action: more-info
+            entity: binary_sensor.1_bs_motion_occupancy
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''sensor.1_bs_motion_illuminance_lux'') }}'
+            secondary: ''
+            icon: mdi:sun-wireless
+            layout: vertical
+            icon_color: ''
+            tap_action:
+              action: more-info
+            entity: sensor.1_bs_motion_illuminance_lux
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''sensor.1_bs_tvoc_voc'') }}'
+            secondary: ''
+            icon: mdi:air-filter
+            layout: vertical
+            entity: sensor.1_bs_tvoc_voc
+            icon_color: |-
+              {% from 'color.jinja' import voc_state %}
+              {{ voc_state('sensor.1_bs_tvoc_voc') }}
+            tap_action:
+              action: more-info
+      - type: grid
+        cards:
+          - type: vertical-stack
+            cards:
+              - type: custom:mushroom-title-card
+                title: ''
+                subtitle: power
+                subtitle_tap_action:
+                  action: navigate
+                  navigation_path: /lovelace/power
+                card_mod:
+                  style: |
+                    :host ha-card {
+                      padding: 0;
+                    }
+                    :host ha-card > div:not(:last-child) {
+                      margin: 0;
+                    }
+              - type: custom:mushroom-template-card
+                primary: ''
+                secondary: plug
+                icon: mdi:power-socket-eu
+                entity: switch.1_bs_plug
+                icon_color: |-
+                  {% from 'color.jinja' import plug_state %}
+                  {{ plug_state('switch.1_bs_plug') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+                hold_action:
+                  action: more-info
+          - type: vertical-stack
+            cards:
+              - type: custom:mushroom-title-card
+                title: ''
+                subtitle: lights
+                subtitle_tap_action:
+                  action: navigate
+                  navigation_path: /lovelace/lights
+                card_mod:
+                  style: |
+                    :host ha-card {
+                      padding: 0;
+                    }
+                    :host ha-card > div:not(:last-child) {
+                      margin: 0;
+                    }
+              - type: custom:mushroom-template-card
+                primary: ''
+                secondary: main
+                icon: mdi:light-switch
+                entity: switch.1_bs_main_light_switch
+                icon_color: |-
+                  {% from 'color.jinja' import light_switch_state %}
+                  {{ light_switch_state('switch.1_bs_main_light_switch') }}
+                layout: vertical
+                tap_action:
+                  action: toggle
+                hold_action:
+                  action: more-info
+  - title: 2.PD
+    path: 2pd
+    badges: []
+    cards:
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: back
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace
+            icon: mdi:view-dashboard
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /house-rooms
+            icon: mdi:home-modern
+            icon_color: blue
+          - type: action
+            tap_action:
+              action: navigate
+              navigation_path: /dashboard-sensors
+            icon: mdi:home-automation
+            icon_color: purple
+          - type: spacer
+          - type: template
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            icon: mdi:home-roof
+            content: 2.PD attic
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: template
+            tap_action:
+              action: more-info
+            icon: |-
+              {% from 'icon.jinja' import door_state %}
+              {{ door_state('binary_sensor.2_pd_door_contact') }}
+            icon_color: |-
+              {% from 'color.jinja' import door_state_inside %}
+              {{ door_state_inside('binary_sensor.2_pd_door_contact') }}
+      - square: true
+        type: grid
+        cards:
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% from 'label.jinja' import smoke_state %}
+              {{ smoke_state('binary_sensor.2_pd_smoke_alarm') }}
+            secondary: ''
+            icon: mdi:smoke
+            layout: vertical
+            entity: binary_sensor.2_pd_smoke_alarm
+            icon_color: |-
+              {% from 'color.jinja' import smoke_state %}
+              {{ smoke_state('binary_sensor.2_pd_smoke_alarm') }}
+            tap_action:
+              action: more-info
+            badge_color: |-
+              {% from 'color.jinja' import smoke_state %}
+              {{ smoke_state('binary_sensor.2_pd_smoke_alarm') }}
+            badge_icon: mdi:hand-okay
+            double_tap_action:
+              action: call-service
+              service: automation.trigger
+              target:
+                entity_id: automation.alert_alarm_smoke_acknowledged
+              data:
+                skip_condition: true
+        columns: 4

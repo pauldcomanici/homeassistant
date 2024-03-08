@@ -1,0 +1,169 @@
+{% macro area(identifier, property='name', secondaryInfo=false) %}
+{% filter trim %}
+{% if (property=='name' and secondaryInfo==true) %}
+  {{ identifier }}-
+{% endif %}
+{% endfilter %}{% filter trim %}
+{% if identifier=='0.FT' %}
+  {% if property=='icon' %}
+    phu:driveway
+  {% elif property=='name' %}
+    front
+  {% elif property=='color' %}
+    
+  {% endif %}
+{% elif identifier=='0.HP' %}
+  {% if property=='icon' %}
+    mdi:location-enter
+  {% elif property=='name' %}
+    hall
+  {% elif property=='color' %}
+    
+  {% endif %}
+{% elif identifier=='0.BJ' %}
+  {% if property=='icon' %}
+    mdi:shower-head
+  {% elif property=='name' %}
+    bathroom
+  {% elif property=='color' %}
+    blue
+  {% endif %}
+{% elif identifier=='0.CT' %}
+  {% if property=='icon' %}
+    mdi:cogs
+  {% elif property=='name' %}
+    technical room
+  {% elif property=='color' %}
+    #ff2600
+  {% endif %}
+{% elif identifier=='0.BP' %}
+  {% if property=='icon' %}
+    mdi:water-plus
+  {% elif property=='name' %}
+    cellar
+  {% elif property=='color' %}
+    
+  {% endif %}
+{% elif identifier=='0.BC' %}
+  {% if property=='icon' %}
+    mdi:countertop
+  {% elif property=='name' %}
+    kitchen
+  {% elif property=='color' %}
+    
+  {% endif %}
+{% elif identifier=='0.BR' %}
+  {% if property=='icon' %}
+    mdi:library
+  {% elif property=='name' %}
+    office
+  {% elif property=='color' %}
+    orange
+  {% endif %}
+{% elif identifier=='0.LV1' %}
+  {% if property=='icon' %}
+    mdi:sofa
+  {% elif property=='name' %}
+    livingroom
+  {% elif property=='color' %}
+    #15eacc
+  {% endif %}
+{% elif identifier=='0.LV2' %}
+  {% if property=='icon' %}
+    mdi:sofa-single
+  {% elif property=='name' %}
+    livingroom
+  {% elif property=='color' %}
+    #1fe0b2
+  {% endif %}
+{% elif identifier=='0.TS' %}
+  {% if property=='icon' %}
+    mdi:awning-outline
+  {% elif property=='name' %}
+    terace
+  {% elif property=='color' %}
+    cyan
+  {% endif %}
+{% elif identifier=='0.GR' %}
+  {% if property=='icon' %}
+    mdi:grass
+  {% elif property=='name' %}
+    garden
+  {% elif property=='color' %}
+    green
+  {% endif %}
+{% elif identifier=='01.CS' %}
+  {% if property=='icon' %}
+    mdi:stairs
+  {% elif property=='name' %}
+    stairs
+  {% elif property=='color' %}
+    
+  {% endif %}
+{% elif identifier=='1.HE' %}
+  {% if property=='icon' %}
+    mdi:keyboard-space
+  {% elif property=='name' %}
+    hall
+  {% elif property=='color' %}
+    
+  {% endif %}
+{% elif identifier=='1.BS' %}
+  {% if property=='icon' %}
+    mdi:shower
+  {% elif property=='name' %}
+    bathroom
+  {% elif property=='color' %}
+    blue
+  {% endif %}
+{% elif identifier=='1.DM' %}
+  {% if property=='icon' %}
+    mdi:bed-king
+  {% elif property=='name' %}
+    bedroom
+  {% elif property=='color' %}
+    purple
+  {% endif %}
+{% elif identifier=='1.DRM' %}
+  {% if property=='icon' %}
+    mdi:hanger
+  {% elif property=='name' %}
+    dressing
+  {% elif property=='color' %}
+    #ff40ff
+  {% endif %}
+{% elif identifier=='1.DR' %}
+  {% if property=='icon' %}
+    phu:rooms-closet
+  {% elif property=='name' %}
+    dressing
+  {% elif property=='color' %}
+    #F5F5F5
+  {% endif %}
+{% elif identifier=='1.DI' %}
+  {% if property=='icon' %}
+    mdi:teddy-bear
+  {% elif property=='name' %}
+    child
+  {% elif property=='color' %}
+    
+  {% endif %}
+{% elif identifier=='1.DE' %}
+  {% if property=='icon' %}
+    mdi:desktop-classic
+  {% elif property=='name' %}
+    office
+  {% elif property=='color' %}
+    
+  {% endif %}
+{% elif identifier=='2.PD' %}
+  {% if property=='icon' %}
+    mdi:home-roof
+  {% elif property=='name' %}
+    attic
+  {% elif property=='color' %}
+    
+  {% endif %}
+{% endif %}
+{% endfilter %}
+{% endmacro %}

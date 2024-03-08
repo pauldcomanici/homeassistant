@@ -1,0 +1,67 @@
+- platform: group
+  name: "0.LV1 lights"
+  unique_id: "light.0_lv1_lights"
+  entities:
+    - light.0_lv1_lightbulb1
+    - light.0_lv1_lightbulb2
+    - light.0_lv1_lightbulb3
+- platform: group
+  name: "0.LV2 lights"
+  unique_id: "light.0_lv2_lights"
+  entities:
+    - light.0_lv2_lightbulb1
+    - light.0_lv2_lightbulb2
+- platform: group
+  name: "1.HE lights"
+  unique_id: "light.1_he_lights"
+  entities:
+    - light.shelly_shvin_1_3494546f024c # 1.HE bulb1
+    - light.shelly_shvin_1_3494546e7149 # 1.HE bulb2
+- platform: group
+  name: "1.DM led-lights"
+  unique_id: "light.1_dm_led_lights"
+  entities:
+    - light.1dm_aqara_hub_lightbulb
+    - light.1_dm_led_strip
+- platform: group
+  name: "1.DR lights"
+  unique_id: "light.1_dr_lights"
+  entities:
+    - light.1_dr_lightbulb1
+    - light.1_dr_lightbulb2
+- platform: group
+  name: "1.DI lights"
+  unique_id: "light.1_di_lights"
+  entities:
+    - light.1_di_lightbulb1
+    - light.1_di_lightbulb2
+
+- platform: group
+  name: "light: ground-floor lightbulbs"
+  unique_id: "light.light_ground_floor_lightbulbs"
+  entities:
+    - light.shelly_shvin_1_3494546e7416 # 0.HP
+    - light.0_lv1_lights
+    - light.0_lv2_lights
+    - light.0_bc_lightbar
+- platform: group
+  name: "light: first-floor lightbulbs"
+  unique_id: "light.light_first_floor_lightbulbs"
+  entities:
+    - light.1_he_lights # 1.HE
+    - light.1_dm_led_lights # 1.DM led-lights
+    - light.1_dr_lights
+    - light.1_di_lights
+- platform: group
+  name: "light: all lightbulbs"
+  unique_id: "light.light_all_lightbulbs"
+  entities:
+    - light.light_ground_floor_lightbulbs
+    - light.light_first_floor_lightbulbs
+- platform: group
+  name: "security: lights"
+  unique_id: "light.security_lights"
+  entities:
+    - light.0_lv1_lights
+    - light.0_lv2_lights
+    - light.1dm_aqara_hub_lightbulb
