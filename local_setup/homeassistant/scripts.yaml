@@ -254,38 +254,6 @@ alert_info_media:
     volume_level: 0.5
   mode: restart
   icon: mdi:bullhorn
-light_on_template:
-  alias: 'light: turn_on template'
-  sequence:
-  - service: light.turn_on
-    data:
-      color_name: '{{ color_name }}'
-    target:
-      entity_id: '{{ entity_id }}'
-  - service: light.turn_on
-    data:
-      brightness_pct: '{{ brightness_pct | int }}'
-      color_temp_kelvin: '{{ color_temp_kelvin | int }}'
-    target:
-      entity_id: '{{ entity_id }}'
-  variables:
-    color_name: white
-    brightness_pct: 90
-    color_temp_kelvin: 7000
-  mode: restart
-  icon: mdi:lightbulb-on
-1dm_night_lights:
-  alias: 1.DM night-lights
-  sequence:
-  - service: light.turn_on
-    data:
-      color_name: orange
-      brightness_pct: 30
-    target:
-      area_id: dormitor_matrimonial
-      entity_id: light.1_dm_led_strip
-  mode: single
-  icon: mdi:lightbulb-night
 0ts_roll_down:
   alias: 0.TS roll-down
   sequence:
@@ -453,22 +421,6 @@ notification_critical:
             volume: 1
   icon: mdi:message-badge
   mode: single
-light_turn_on_night_template:
-  alias: 'light: turn_on night-template'
-  variables:
-    color_name: orange
-    brightness_pct: 30
-    color_temp_kelvin: 2000
-  sequence:
-  - service: script.light_on_template
-    data:
-      brightness_pct: '{{ brightness_pct | int }}'
-      color_name: '{{ color_name }}'
-      color_temp_kelvin: '{{ color_temp_kelvin | int }}'
-    target:
-      entity_id: '{{ entity_id }}'
-  mode: restart
-  icon: mdi:lightbulb-on
 lights_all_on:
   alias: 'lights: all on'
   sequence:
@@ -490,30 +442,6 @@ lights_all_off:
       - group.lights_ground_floor
     data: {}
   mode: single
-light_color_cyan:
-  alias: 'light-color: cyan-template'
-  sequence:
-  - service: light.turn_on
-    metadata: {}
-    data:
-      rgb_color:
-      - 0
-      - 238
-      - 255
-    target:
-      entity_id: '{{ entity_id }}'
-  variables:
-    entity_id: light.0_bc_lightbar
-  mode: single
-  icon: mdi:lightbulb-on
-0_bc_lightbar:
-  alias: 0.BC lightbar
-  sequence:
-  - service: script.light_color_cyan
-    data:
-      entity_id: light.0_bc_lightbar
-  mode: single
-  icon: mdi:lightbulb-on
 0_gr_solar_light_nord_action:
   alias: 0.GR solar-light-nord action
   sequence:
@@ -528,3 +456,56 @@ light_color_cyan:
     target:
       entity_id: remote.0_lv2_broadlink_rm4
   mode: single
+test:
+  alias: test
+  sequence:
+  - alias: debug variables
+    if:
+    - condition: state
+      entity_id: input_boolean.manual_override_enabled
+      state: 'off'
+    then:
+    - service: script.notification
+      data:
+        message: is_door_closed -> {{ is_door_closed }} keep_light_on -> {{ keep_light_on}}
+          use_target_entity_off -> {{ use_target_entity_off }} use_target_entity_off_as_light
+          -> {{ use_target_entity_off_as_light }}
+  mode: single
+light_on_template:
+  alias: 'light-on: template'
+  variables:
+    brightness_pct: 100
+    rgb_color:
+    - 255
+    - 255
+    - 255
+  sequence:
+  - service: light.turn_on
+    metadata: {}
+    data:
+      rgb_color: '{{ rgb_color }}'
+      brightness_pct: '{{ brightness_pct|int }}'
+    target:
+      entity_id: '{{ entity_id }}'
+  mode: single
+  icon: mdi:lightbulb-on
+0_bc_lightbar_night:
+  alias: 0.BC lightbar night
+  sequence:
+  - service: light.turn_on
+    metadata: {}
+    data:
+      profile: night
+    target:
+      entity_id: light.0_bc_lightbar
+  mode: restart
+1_drm_night_light:
+  alias: 1.DRM night-light
+  sequence:
+  - service: light.turn_on
+    metadata: {}
+    data:
+      profile: night
+    target:
+      entity_id: light.1_drm_lightbulb
+  mode: restart

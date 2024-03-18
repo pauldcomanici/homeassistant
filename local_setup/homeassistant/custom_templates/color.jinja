@@ -72,9 +72,17 @@
 {% endif %}
 {% endmacro %}
 
-{% macro motion_state(entity_id) %}
+{% macro motion_state(entity_id, last_motion=9999999) %}
 {% if states(entity_id)=="on" %}
   orange
+{% else %}
+  {% if last_motion<30 %}
+    #FF5E0E
+  {% elif last_motion<180 %}
+    #EB6841
+  {% elif last_motion<900 %}
+    #D99058
+  {% endif %}
 {% endif %}
 {% endmacro %}
 
@@ -157,3 +165,4 @@
   grey
 {% endif %}
 {% endmacro %}
+

@@ -910,8 +910,11 @@ views:
             type: button
             tap_action:
               action: call-service
-              service: script.1dm_night_lights
-              target: {}
+              service: light.turn_on
+              target:
+                entity_id: light.1_dm_led_lights
+              data:
+                profile: night
             icon: mdi:lightbulb-night
             hold_action:
               action: none
@@ -924,13 +927,13 @@ views:
             type: button
             tap_action:
               action: call-service
-              service: scene.turn_on
+              service: light.turn_on
               target:
                 entity_id:
-                  - scene.0_lv1_night_lights
-                  - scene.0_lv2_night_lights
-                device_id: []
-                area_id: []
+                  - light.0_lv1_lights
+                  - light.0_lv2_lights
+              data:
+                profile: night
             icon: mdi:lightbulb-night
             hold_action:
               action: none
@@ -1420,11 +1423,18 @@ views:
             send_notification: false
             parse_config: false
             chunk_size: false
-      - type: horizontal-stack
-        cards:
-          - type: entities
-            entities:
-              - entity: sensor.unavailable
+      - type: markdown
+        content: |-
+          {%- set ns = namespace(sensors=[]) -%}
+          {%- set ns.sensors = states
+            | selectattr('state', 'eq', 'unavailable')
+            | rejectattr('entity_id', 'in', state_attr('group.ignore_unavailable_entities', 'entity_id'))
+            | rejectattr('entity_id', 'eq', 'group.ignore_unavailable_entities')
+            | map(attribute='name') | list -%}
+          {%- if (ns.sensors | count > 0) -%}
+            {{ ns.sensors | list | join(', ') }}
+          {%- else -%} none {%- endif %}
+        title: unavailable sensors
       - type: custom:mushroom-title-card
         title: ''
         subtitle: battery

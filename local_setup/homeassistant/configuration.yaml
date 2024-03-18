@@ -6,6 +6,7 @@ default_config:
 frontend:
   themes: !include_dir_merge_named themes
 
+alert: !include alerts.yaml
 automation: !include automations.yaml
 binary_sensor: !include binary_sensors.yaml
 group: !include groups.yaml
@@ -152,6 +153,6 @@ media_player:
     name: "media_player: all"
     entities:
       - media_player.0lv2_sonos300
-      - media_player.1_dm_apple_tv
+      - media_player.1_di_apple_tv
 
 

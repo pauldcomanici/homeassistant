@@ -20,13 +20,13 @@
   entities:
     - switch.switch_ground_floor_lights
     - switch.switch_first_floor_lights
-# 1.DM group power-left
+# 1.DI group power-closet
 - platform: group
-  name: "1.DM power-left outlet"
-  unique_id: "1_dm_power_left_outlet"
+  name: "1.DI power-closet outlet"
+  unique_id: "1_di_power_closet_outlet"
   entities:
-    - switch.1_dm_power_left_outlet_1
-    - switch.1_dm_power_left_outlet_2
-    - switch.1_dm_power_left_outlet_3
-    - switch.1_dm_power_left_outlet_4
-    - switch.1_dm_power_left_usb
+    - switch.1_di_power_closet_outlet_1
+    - switch.1_di_power_closet_outlet_2
+    - switch.1_di_power_closet_outlet_3
+    - switch.1_di_power_closet_outlet_4
+    - switch.1_di_power_closet_usb

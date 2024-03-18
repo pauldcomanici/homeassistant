@@ -157,24 +157,6 @@
         {{ (states('sensor.1_dm_air_conditioning_temperature_measurement')|float
             - states('input_number.1_dm_climate_temperature')|float) | round(2) }}
 
-    ### minimum temperature for the next 24h ###
-    - name: "temperature: minimum for next 24h"
-      unit_of_measurement: "°C"
-      icon: mdi:thermometer-low
-      state: >
-        {{
-          state_attr('weather.add_on_forecast_home_tm_hourly', 'forecast') | map(attribute='temperature') | list | min
-        }}
-
-    ### maximum temperature for the next 24h ###
-    - name: "temperature: maximum for next 24h"
-      unit_of_measurement: "°C"
-      icon: mdi:thermometer-high
-      state: >
-        {{
-          state_attr('weather.add_on_forecast_home_tm_hourly', 'forecast') | map(attribute='temperature') | list | max
-        }}
-
     ##### sensors in states that need attention ##################################
     - name: "unavailable"
       unique_id: "sensor.unavailable"
@@ -229,3 +211,49 @@
         {% from 'last_motion_time.jinja' import last_motion %}
         {{ last_motion('binary_sensor.0_bj_motion_occupancy', 'sensor.0_bj_last_motion', 'number.0_bj_motion_detection_interval') }}
       
+### weather hourly forecast
+- trigger:
+  - platform: time_pattern
+    hours: /1
+  action:
+    - service: weather.get_forecasts
+      data:
+        type: hourly
+      target:
+        entity_id: weather.add_on_forecast_home_tm
+      response_variable: forecast_data
+  sensor:
+    - name: weather hourly forecast
+      unique_id: 'sensor.weather_hourly_forecast'
+      state: "{{ forecast_data['weather.add_on_forecast_home_tm'].forecast[0].temperature }}"
+      attributes:
+        forecast: "{{ forecast_data['weather.add_on_forecast_home_tm'].forecast }}"
+        updatedAt: "{{ now().isoformat() }}"
+
+### minimum temperature for the next 24h ###
+- trigger:
+    - platform: state
+      entity_id:
+        - sensor.weather_hourly_forecast
+  sensor:
+    - name: "temperature: minimum for next 24h"
+      unit_of_measurement: "°C"
+      icon: mdi:thermometer-low
+      state: >
+        {{
+          state_attr('sensor.weather_hourly_forecast', 'forecast') | map(attribute='temperature') | list | min
+        }}
+
+### maximum temperature for the next 24h ###
+- trigger:
+    - platform: state
+      entity_id:
+        - sensor.weather_hourly_forecast
+  sensor:
+    - name: "temperature: maximum for next 24h"
+      unit_of_measurement: "°C"
+      icon: mdi:thermometer-high
+      state: >
+        {{
+          state_attr('sensor.weather_hourly_forecast', 'forecast') | map(attribute='temperature') | list | max
+        }}

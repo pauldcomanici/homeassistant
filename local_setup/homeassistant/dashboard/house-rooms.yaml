@@ -1176,17 +1176,6 @@ views:
                 layout: vertical
                 tap_action:
                   action: toggle
-              - type: custom:mushroom-template-card
-                primary: ''
-                secondary: switch7
-                icon: mdi:power-socket-eu
-                entity: switch.0_lv1_switch7
-                icon_color: |-
-                  {% from 'color.jinja' import plug_state %}
-                  {{ plug_state('switch.0_lv1_switch7') }}
-                layout: vertical
-                tap_action:
-                  action: toggle
   - title: 0.LV2
     path: 0lv2
     badges: []
@@ -1988,7 +1977,7 @@ views:
             show_status: true
             show_toolbar: true
             type: custom:landroid-card
-            entity: vacuum.0_gr_landroid
+            entity: lawn_mower.0_gr_landroid
             image_left: false
             show_name: true
             compact_view: false
@@ -2342,8 +2331,11 @@ views:
                     entity: light.1_dm_led_lights
                     tap_action:
                       action: call-service
-                      service: script.1dm_night_lights
-                      target: {}
+                      service: light.turn_on
+                      target:
+                        entity_id: light.1_dm_led_lights
+                      data:
+                        profile: night
                   - type: custom:mushroom-light-card
                     entity: light.1_dm_led_lights
                     layout: vertical

@@ -1,0 +1,31 @@
+0_ft_door:
+  name: 0.FT door open
+  entity_id: binary_sensor.0_ft_door_contact
+  state: "on"
+  repeat: 1
+  can_acknowledge: true
+  skip_first: false
+  message: "0.FT door is open"
+  notifiers:
+    - mobile_phones
+    - persistent_notification
+1_drm_window:
+  name: 1.DRM window open
+  entity_id: binary_sensor.1_drm_window_contact
+  state: "on"
+  repeat: 1
+  can_acknowledge: false
+  message: "1.DRM window is open"
+  notifiers:
+    - mobile_phones
+    - persistent_notification
+# 1_bs_window:
+#   name: 1.BS window open
+#   entity_id: binary_sensor.1_bs_window_contact
+#   state: "on"
+#   repeat: 1
+#   can_acknowledge: true
+#   skip_first: false
+#   message: "1.BS window is open"
+#   notifiers:
+#     - persistent_notification

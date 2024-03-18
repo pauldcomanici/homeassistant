@@ -38,6 +38,11 @@
     - binary_sensor.0_ct_smoke_smoke
     - binary_sensor.1_dm_smoke_smoke
     - binary_sensor.2_pd_smoke_alarm
+- platform: group
+  name: "gas: sensors"
+  entities:
+    - binary_sensor.gas_sensor_gas
+    - binary_sensor.0_bc_gas_gas
 - platform: tod
   name: "dehumidifier: schedule"
   after: "7:30"
