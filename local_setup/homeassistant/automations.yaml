@@ -420,17 +420,30 @@
   alias: 'alert_alarm: gas'
   description: ''
   trigger:
-  - type: gas
-    platform: device
-    device_id: 2c023a7e097d1fc7060ce3b0933cd4a5
-    entity_id: 2a623e732a18d6da287af41ddb5d5a0e
-    domain: binary_sensor
+  - platform: state
+    entity_id:
+    - binary_sensor.0_bc_gas_gas
+    to: 'on'
+    id: leak-bc
+  - platform: state
+    entity_id:
+    - binary_sensor.gas_sensor_gas
+    to: 'on'
     id: leak-ct
   condition: []
   action:
   - parallel:
-    - alias: leak-ct
+    - alias: leak area
       choose:
+      - conditions:
+        - condition: trigger
+          id:
+          - leak-bc
+        sequence:
+        - service: script.notification
+          data:
+            critical: true
+            message: gas leak determined in the kitchen!
       - conditions:
         - condition: trigger
           id:
@@ -440,15 +453,15 @@
           data:
             critical: true
             message: gas leak determined in the technical room!
+        - service: switch.turn_off
+          data: {}
+          target:
+            entity_id: switch.0_ct_plug_heater
     - service: script.alert_warning
       data: {}
     - service: script.alarm_media
       data:
         media_content_id: media-source://media_source/local/emergency-alarm.mp3
-    - service: switch.turn_off
-      data: {}
-      target:
-        entity_id: switch.0_ct_plug_heater
   mode: single
 - id: '1693303398103'
   alias: home.presence changes
